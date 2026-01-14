@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { usePathname } from "next/navigation";
 
 type HeaderProps = {
   lang: 'sr' | 'en';
@@ -13,6 +14,7 @@ type HeaderProps = {
 export default function Header({ lang, dict }: HeaderProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -20,7 +22,6 @@ export default function Header({ lang, dict }: HeaderProps) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // JEDNOSTAVNO - samo overflow hidden, БЕЗ position fixed!
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -52,7 +53,7 @@ export default function Header({ lang, dict }: HeaderProps) {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
-            <Link href={`/${lang}`} className="flex items-center z-[101]">
+            <Link href={`/${lang}`} className="flex items-center z-[110]">
               <Image
                 src="/images/logo.png"
                 alt="Phoenix Gym 365"
@@ -65,15 +66,20 @@ export default function Header({ lang, dict }: HeaderProps) {
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center gap-8">
-              {menuItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="text-white hover:text-[#ff6b35] transition-colors duration-300 font-medium"
-                >
-                  {item.label}
-                </Link>
-              ))}
+              {menuItems.map((item) => {
+                const isActive = pathname === item.href;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`transition-colors duration-300 font-medium ${
+                      isActive ? "text-[#ff6b35]" : "text-white hover:text-[#ff6b35]"
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
 
               {/* Language Switcher */}
               <div className="flex items-center gap-2 ml-4">
@@ -103,7 +109,7 @@ export default function Header({ lang, dict }: HeaderProps) {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="md:hidden text-white p-2 hover:bg-white/10 rounded-lg transition-colors z-[101] relative"
+              className="md:hidden text-white p-2 hover:bg-white/10 rounded-lg transition-colors z-[110] relative"
               aria-label="Toggle menu"
             >
               {isOpen ? <X size={28} /> : <Menu size={28} />}
@@ -112,7 +118,7 @@ export default function Header({ lang, dict }: HeaderProps) {
         </div>
       </header>
 
-      {/* Mobile Menu - IZVAN headera! */}
+      {/* Mobile Menu */}
       <AnimatePresence>
         {isOpen && (
           <>
@@ -122,61 +128,51 @@ export default function Header({ lang, dict }: HeaderProps) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[90] md:hidden"
+              className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[90] md:hidden"
               onClick={() => setIsOpen(false)}
             />
 
-            {/* Menu Panel */}
+            {/* Menu Panel - SAMO menu items, BEZ loga */}
             <motion.div
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "tween", duration: 0.3, ease: "easeInOut" }}
-              className="fixed top-0 right-0 bottom-0 w-[85%] max-w-sm bg-gradient-to-b from-gray-900 to-black shadow-2xl z-[95] md:hidden overflow-y-auto"
+              className="fixed top-20 right-0 bottom-0 w-full bg-gradient-to-b from-gray-900 to-black z-[95] md:hidden overflow-y-auto"
             >
-              {/* Menu Header */}
-              <div className="flex items-center justify-between p-6 border-b border-white/10">
-                <Image
-                  src="/images/logo.png"
-                  alt="Phoenix Gym 365"
-                  width={100}
-                  height={50}
-                  className="h-10 w-auto"
-                />
-                <button
-                  onClick={() => setIsOpen(false)}
-                  className="text-white p-2 hover:bg-white/10 rounded-lg transition-colors"
-                  aria-label="Close menu"
-                >
-                  <X size={24} />
-                </button>
-              </div>
-
               {/* Menu Items */}
-              <nav className="flex flex-col p-6 space-y-2">
-                {menuItems.map((item, i) => (
-                  <motion.div
-                    key={item.href}
-                    initial={{ x: 50, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ delay: i * 0.1, duration: 0.3 }}
-                  >
-                    <Link
-                      href={item.href}
-                      onClick={() => setIsOpen(false)}
-                      className="block text-white text-xl font-medium py-4 px-4 rounded-lg hover:bg-[#ff6b35] transition-all duration-300"
+              <nav className="flex flex-col items-center justify-center min-h-[calc(100vh-10rem)] space-y-4 px-6">
+                {menuItems.map((item, i) => {
+                  const isActive = pathname === item.href;
+                  return (
+                    <motion.div
+                      key={item.href}
+                      initial={{ x: 50, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      transition={{ delay: i * 0.1, duration: 0.3 }}
+                      className="w-full max-w-md"
                     >
-                      {item.label}
-                    </Link>
-                  </motion.div>
-                ))}
+                      <Link
+                        href={item.href}
+                        onClick={() => setIsOpen(false)}
+                        className={`block text-2xl font-bold py-4 px-6 rounded-lg transition-all duration-300 text-center ${
+                          isActive
+                            ? "bg-[#ff6b35] text-white shadow-lg"
+                            : "text-white hover:bg-white/10"
+                        }`}
+                      >
+                        {item.label}
+                      </Link>
+                    </motion.div>
+                  );
+                })}
               </nav>
 
               {/* Language Switcher */}
               <div className="absolute bottom-8 left-6 right-6">
                 <div className="flex items-center gap-3 p-4 bg-white/5 rounded-lg border border-white/10">
                   <span className="text-white/60 text-sm font-medium">
-                    Jezik:
+                    {dict.nav?.language || "Language"}:
                   </span>
                   <Link
                     href="/sr"

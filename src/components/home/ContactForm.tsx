@@ -3,9 +3,11 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Mail, Phone, MapPin, Send, CheckCircle, AlertCircle } from "lucide-react";
 
+
 type ContactFormProps = {
   dict: any;
 };
+
 
 export default function ContactForm({ dict }: ContactFormProps) {
   const [formData, setFormData] = useState({
@@ -15,16 +17,20 @@ export default function ContactForm({ dict }: ContactFormProps) {
     message: ""
   });
 
+
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
 
+
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
+
 
     if (!formData.name.trim()) {
       newErrors.name = dict.contact?.errors?.name || "Ime je obavezno";
     }
+
 
     if (!formData.email.trim()) {
       newErrors.email = dict.contact?.errors?.email || "Email je obavezan";
@@ -32,28 +38,36 @@ export default function ContactForm({ dict }: ContactFormProps) {
       newErrors.email = dict.contact?.errors?.emailInvalid || "Email nije validan";
     }
 
+
     if (!formData.phone.trim()) {
       newErrors.phone = dict.contact?.errors?.phone || "Telefon je obavezan";
     }
+
 
     if (!formData.message.trim()) {
       newErrors.message = dict.contact?.errors?.message || "Poruka je obavezna";
     }
 
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+
     if (!validateForm()) return;
+
 
     setIsSubmitting(true);
     setSubmitStatus("idle");
 
+
     try {
       await new Promise(resolve => setTimeout(resolve, 1500));
+
 
       setSubmitStatus("success");
       setFormData({ name: "", email: "", phone: "", message: "" });
@@ -66,6 +80,7 @@ export default function ContactForm({ dict }: ContactFormProps) {
     }
   };
 
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -73,6 +88,7 @@ export default function ContactForm({ dict }: ContactFormProps) {
       setErrors(prev => ({ ...prev, [name]: "" }));
     }
   };
+
 
   const contactInfo = [
     {
@@ -95,10 +111,12 @@ export default function ContactForm({ dict }: ContactFormProps) {
     }
   ];
 
+
   return (
     <section className="relative py-20 lg:py-32 bg-black overflow-hidden">
       <div className="absolute inset-0 opacity-5" />
       <div className="absolute top-20 right-10 w-96 h-96 bg-[#ff6b35]/10 rounded-full blur-[120px]" />
+
 
       <div className="container mx-auto px-4 relative z-10">
         {/* Section Header */}
@@ -122,6 +140,7 @@ export default function ContactForm({ dict }: ContactFormProps) {
           </p>
         </motion.div>
 
+
         <div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
           {/* Left - Contact Info */}
           <div className="space-y-8">
@@ -138,6 +157,7 @@ export default function ContactForm({ dict }: ContactFormProps) {
                 {dict.contact?.description || "Naš tim je tu da odgovori na sva vaša pitanja o članarinama, treninzima i uslugama koje nudimo."}
               </p>
             </motion.div>
+
 
             {/* Contact Info Cards */}
             <div className="space-y-4">
@@ -167,6 +187,7 @@ export default function ContactForm({ dict }: ContactFormProps) {
               })}
             </div>
 
+
             {/* Google Map */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -187,6 +208,7 @@ export default function ContactForm({ dict }: ContactFormProps) {
               />
             </motion.div>
           </div>
+
 
           {/* Right - Contact Form */}
           <motion.div
@@ -214,12 +236,13 @@ export default function ContactForm({ dict }: ContactFormProps) {
                   placeholder={dict.contact?.namePlaceholder || "Vaše ime"}
                 />
                 {errors.name && (
-                  <p className="text-red-500 text-sm mt-2 flex items-center gap-1">
+                  <div className="text-red-500 text-sm mt-2 flex items-center gap-1">
                     <AlertCircle className="w-4 h-4" />
                     {errors.name}
-                  </p>
+                  </div>
                 )}
               </div>
+
 
               {/* Email Input */}
               <div>
@@ -238,12 +261,13 @@ export default function ContactForm({ dict }: ContactFormProps) {
                   placeholder={dict.contact?.emailPlaceholder || "vas@email.com"}
                 />
                 {errors.email && (
-                  <p className="text-red-500 text-sm mt-2 flex items-center gap-1">
+                  <div className="text-red-500 text-sm mt-2 flex items-center gap-1">
                     <AlertCircle className="w-4 h-4" />
                     {errors.email}
-                  </p>
+                  </div>
                 )}
               </div>
+
 
               {/* Phone Input */}
               <div>
@@ -262,12 +286,13 @@ export default function ContactForm({ dict }: ContactFormProps) {
                   placeholder={dict.contact?.phonePlaceholder || "+387 65 123 456"}
                 />
                 {errors.phone && (
-                  <p className="text-red-500 text-sm mt-2 flex items-center gap-1">
+                  <div className="text-red-500 text-sm mt-2 flex items-center gap-1">
                     <AlertCircle className="w-4 h-4" />
                     {errors.phone}
-                  </p>
+                  </div>
                 )}
               </div>
+
 
               {/* Message Textarea */}
               <div>
@@ -286,12 +311,13 @@ export default function ContactForm({ dict }: ContactFormProps) {
                   placeholder={dict.contact?.messagePlaceholder || "Vaša poruka..."}
                 />
                 {errors.message && (
-                  <p className="text-red-500 text-sm mt-2 flex items-center gap-1">
+                  <div className="text-red-500 text-sm mt-2 flex items-center gap-1">
                     <AlertCircle className="w-4 h-4" />
                     {errors.message}
-                  </p>
+                  </div>
                 )}
               </div>
+
 
               {/* Submit Button */}
               <button
@@ -312,6 +338,7 @@ export default function ContactForm({ dict }: ContactFormProps) {
                 )}
               </button>
 
+
               {/* Success/Error Messages */}
               {submitStatus === "success" && (
                 <motion.div
@@ -320,11 +347,12 @@ export default function ContactForm({ dict }: ContactFormProps) {
                   className="p-4 bg-green-500/10 border border-green-500/30 rounded-xl flex items-center gap-3"
                 >
                   <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
-                  <p className="text-green-500 font-medium">
+                  <div className="text-green-500 font-medium">
                     {dict.contact?.success || "Poruka uspješno poslata! Javićemo vam se uskoro."}
-                  </p>
+                  </div>
                 </motion.div>
               )}
+
 
               {submitStatus === "error" && (
                 <motion.div
@@ -333,9 +361,9 @@ export default function ContactForm({ dict }: ContactFormProps) {
                   className="p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-center gap-3"
                 >
                   <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
-                  <p className="text-red-500 font-medium">
+                  <div className="text-red-500 font-medium">
                     {dict.contact?.error || "Greška pri slanju. Pokušajte ponovo."}
-                  </p>
+                  </div>
                 </motion.div>
               )}
             </form>
