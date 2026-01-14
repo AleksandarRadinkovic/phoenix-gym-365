@@ -119,7 +119,7 @@ export default function Header({ lang, dict }: HeaderProps) {
       </header>
 
       {/* Mobile Menu */}
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {isOpen && (
           <>
             {/* Overlay */}
@@ -127,21 +127,26 @@ export default function Header({ lang, dict }: HeaderProps) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
               className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[90] md:hidden"
               onClick={() => setIsOpen(false)}
             />
 
-            {/* Menu Panel - SAMO menu items, BEZ loga */}
+            {/* Menu Panel */}
             <motion.div
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
-              transition={{ type: "tween", duration: 0.3, ease: "easeInOut" }}
+              transition={{ 
+                type: "spring", 
+                damping: 30, 
+                stiffness: 300,
+                mass: 0.8
+              }}
               className="fixed top-20 right-0 bottom-0 w-full bg-gradient-to-b from-gray-900 to-black z-[95] md:hidden overflow-y-auto"
             >
-              {/* Menu Items */}
-              <nav className="flex flex-col items-center justify-center min-h-[calc(100vh-10rem)] space-y-4 px-6">
+              {/* Menu Items - Pomereni gore */}
+              <nav className="flex flex-col items-center pt-12 space-y-4 px-6">
                 {menuItems.map((item, i) => {
                   const isActive = pathname === item.href;
                   return (
@@ -149,7 +154,12 @@ export default function Header({ lang, dict }: HeaderProps) {
                       key={item.href}
                       initial={{ x: 50, opacity: 0 }}
                       animate={{ x: 0, opacity: 1 }}
-                      transition={{ delay: i * 0.1, duration: 0.3 }}
+                      exit={{ x: 50, opacity: 0 }}
+                      transition={{ 
+                        delay: i * 0.1,
+                        duration: 0.4,
+                        ease: "easeOut"
+                      }}
                       className="w-full max-w-md"
                     >
                       <Link
@@ -157,7 +167,7 @@ export default function Header({ lang, dict }: HeaderProps) {
                         onClick={() => setIsOpen(false)}
                         className={`block text-2xl font-bold py-4 px-6 rounded-lg transition-all duration-300 text-center ${
                           isActive
-                            ? "bg-[#ff6b35] text-white shadow-lg"
+                            ? "bg-[#ff6b35] text-white shadow-lg shadow-[#ff6b35]/30"
                             : "text-white hover:bg-white/10"
                         }`}
                       >
@@ -169,7 +179,13 @@ export default function Header({ lang, dict }: HeaderProps) {
               </nav>
 
               {/* Language Switcher */}
-              <div className="absolute bottom-8 left-6 right-6">
+              <motion.div
+                initial={{ y: 50, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: 50, opacity: 0 }}
+                transition={{ delay: 0.3, duration: 0.4 }}
+                className="absolute bottom-8 left-6 right-6"
+              >
                 <div className="flex items-center gap-3 p-4 bg-white/5 rounded-lg border border-white/10">
                   <span className="text-white/60 text-sm font-medium">
                     {dict.nav?.language || "Language"}:
@@ -197,7 +213,7 @@ export default function Header({ lang, dict }: HeaderProps) {
                     EN
                   </Link>
                 </div>
-              </div>
+              </motion.div>
             </motion.div>
           </>
         )}
