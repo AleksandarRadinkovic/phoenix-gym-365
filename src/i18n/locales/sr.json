@@ -1,0 +1,140 @@
+{
+  "nav": {
+    "home": "Početna",
+    "team": "Naš Tim",
+    "contact": "Kontakt",
+    "language": "Jezik"
+  },
+  "hero": {
+    "slide1": {
+      "title": "Transformiši Svoje Telo",
+      "subtitle": "Pridruži se najboljem gym-u u gradu"
+    },
+    "slide2": {
+      "title": "Profesionalni Treneri",
+      "subtitle": "Individualni pristup svakom članu"
+    },
+    "slide3": {
+      "title": "Moderna Oprema",
+      "subtitle": "Sve što ti treba za uspeh"
+    },
+    "cta": "Počni Danas"
+  },
+  "stats": {
+    "members": "Aktivnih članova",
+    "equipment": "Komada opreme",
+    "trainers": "Profesionalnih trenera",
+    "experience": "Godina iskustva"
+  },
+  "about": {
+    "badge": "O nama",
+    "title": "Dobrodošli u Phoenix Gym 365",
+    "description": "Phoenix Gym 365 je moderna teretana sa više od 10 godina iskustva. Naš cilj je da vam pružimo najbolje uslove za trening i pomoć profesionalnih trenera kako biste postigli svoje fitnes ciljeve.",
+    "feature1": "24/7 pristup teretani",
+    "feature2": "Besplatno vođenje treninga",
+    "feature3": "Moderna oprema",
+    "feature4": "Profesionalni treneri",
+    "cta": "Upoznaj naš tim"
+  },
+  "services": {
+    "badge": "Naše usluge",
+    "title": "Što Nudimo",
+    "subtitle": "Sve što vam treba za postizanje vaših fitnes ciljeva",
+    "gym": {
+      "title": "Gym Prostor",
+      "desc": "Moderna oprema za sve vrste treninga"
+    },
+    "personal": {
+      "title": "Personalni Treninzi",
+      "desc": "Individualan pristup sa profesionalnim trenerima"
+    },
+    "cardio": {
+      "title": "Cardio Zona",
+      "desc": "Oprema za kardiovaskularne vježbe"
+    },
+    "functional": {
+      "title": "Funkcionalni Trening",
+      "desc": "Kompletan program za poboljšanje funkcionalnosti"
+    },
+    "group": {
+      "title": "Grupni Treninzi",
+      "desc": "Motivišuća grupna atmosfera"
+    },
+    "availability": {
+      "title": "24/7 Dostupnost",
+      "desc": "Pristup teretani u bilo koje doba"
+    }
+  },
+  "gallery": {
+    "badge": "Galerija",
+    "title": "Naš Prostor",
+    "subtitle": "Pogledajte našu modernu teretanu",
+    "all": "Sve",
+    "gym": "Teretana",
+    "cardio": "Cardio",
+    "equipment": "Oprema",
+    "training": "Treninzi"
+  },
+  "bmi": {
+    "badge": "BMI Kalkulator",
+    "title": "Izračunaj Svoj BMI",
+    "subtitle": "Body Mass Index - Indeks tjelesne mase",
+    "enterData": "Unesi podatke",
+    "weight": "Težina",
+    "height": "Visina",
+    "calculate": "Izračunaj",
+    "yourBMI": "Tvoj BMI indeks",
+    "enterToCalculate": "Unesi podatke za izračunavanje",
+    "scale": "BMI Skala",
+    "underweight": "Pothranjenost",
+    "normal": "Normalna težina",
+    "overweight": "Prekomjerna težina",
+    "obese": "Gojaznost"
+  },
+"testimonials": {
+    "badge": "Recenzije",
+    "title": "Šta Kažu Naši Članovi",
+    "subtitle": "Prave priče, pravi rezultati",
+    "member": "Član",
+    "trainer": "Trener",
+    "boba": "Phoenix Gym je promijenio moj život! Atmosfera je nevjerovatna, oprema moderna, a treneri su uvijek tu da pomognu. Za godinu dana sam potpuno transformisao svoje tijelo i nikada nisam bio u boljoj formi.",
+    "sergej": "Kao trener u Phoenix Gym-u, ponosan sam što radim sa motiviranim ljudima koji žele da postignu svoje ciljeve. Imamo sjajan tim i odličnu opremu koja nam omogućava da pružimo najbolje rezultate.",
+    "dubravko": "Phoenix Gym 365 nije samo teretana, to je porodica. Radim ovdje već nekoliko godina i svaki dan vidim kako naši članovi postižu nevjerovatne rezultate. To me motivira da budem bolji trener."
+  },
+    "contact": {
+    "badge": "Kontakt",
+    "title": "Kontaktirajte Nas",
+    "subtitle": "Imate pitanja? Pošaljite nam poruku i javićemo vam se uskoro",
+    "getInTouch": "Stupite u kontakt",
+    "description": "Naš tim je tu da odgovori na sva vaša pitanja o članarinama, treninzima i uslugama koje nudimo.",
+    "phone": "Telefon",
+    "email": "Email",
+    "address": "Adresa",
+    "nameLabel": "Ime i prezime",
+    "namePlaceholder": "Vaše ime",
+    "emailLabel": "Email",
+    "emailPlaceholder": "vas@email.com",
+    "phoneLabel": "Telefon",
+    "phonePlaceholder": "+387 65 123 456",
+    "messageLabel": "Poruka",
+    "messagePlaceholder": "Vaša poruka...",
+    "send": "Pošalji Poruku",
+    "sending": "Šaljem...",
+    "success": "Poruka uspješno poslata! Javićemo vam se uskoro.",
+    "error": "Greška pri slanju. Pokušajte ponovo.",
+    "errors": {
+      "name": "Ime je obavezno",
+      "email": "Email je obavezan",
+      "emailInvalid": "Email nije validan",
+      "phone": "Telefon je obavezan",
+      "message": "Poruka je obavezna"
+    }
+  },
+
+  "metadata": {
+    "home": {
+      "title": "Phoenix Gym 365 - Moderna Teretana",
+      "description": "Phoenix Gym 365 - najbolja teretana u gradu. Profesionalni treneri, moderna oprema, 24/7 pristup."
+    }
+  }
+}

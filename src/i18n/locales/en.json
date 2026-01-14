@@ -1,0 +1,139 @@
+{
+  "nav": {
+    "home": "Home",
+    "team": "Our Team",
+    "contact": "Contact",
+    "language": "Language"
+  },
+  "hero": {
+    "slide1": {
+      "title": "Transform Your Body",
+      "subtitle": "Join the best gym in town"
+    },
+    "slide2": {
+      "title": "Professional Trainers",
+      "subtitle": "Individual approach to every member"
+    },
+    "slide3": {
+      "title": "Modern Equipment",
+      "subtitle": "Everything you need for success"
+    },
+    "cta": "Start Today"
+  },
+  "stats": {
+    "members": "Active Members",
+    "equipment": "Pieces of Equipment",
+    "trainers": "Professional Trainers",
+    "experience": "Years of Experience"
+  },
+  "about": {
+    "badge": "About Us",
+    "title": "Welcome to Phoenix Gym 365",
+    "description": "Phoenix Gym 365 is a modern gym with over 10 years of experience. Our goal is to provide you with the best training conditions and professional trainer support to help you achieve your fitness goals.",
+    "feature1": "24/7 gym access",
+    "feature2": "Free training guidance",
+    "feature3": "Modern equipment",
+    "feature4": "Professional trainers",
+    "cta": "Meet our team"
+  },
+  "services": {
+    "badge": "Our Services",
+    "title": "What We Offer",
+    "subtitle": "Everything you need to achieve your fitness goals",
+    "gym": {
+      "title": "Gym Space",
+      "desc": "Modern equipment for all types of training"
+    },
+    "personal": {
+      "title": "Personal Training",
+      "desc": "Individual approach with professional trainers"
+    },
+    "cardio": {
+      "title": "Cardio Zone",
+      "desc": "Equipment for cardiovascular exercises"
+    },
+    "functional": {
+      "title": "Functional Training",
+      "desc": "Complete program for improving functionality"
+    },
+    "group": {
+      "title": "Group Training",
+      "desc": "Motivating group atmosphere"
+    },
+    "availability": {
+      "title": "24/7 Availability",
+      "desc": "Access to the gym at any time"
+    }
+  },
+  "gallery": {
+    "badge": "Gallery",
+    "title": "Our Space",
+    "subtitle": "Check out our modern gym",
+    "all": "All",
+    "gym": "Gym",
+    "cardio": "Cardio",
+    "equipment": "Equipment",
+    "training": "Training"
+  },
+  "bmi": {
+    "badge": "BMI Calculator",
+    "title": "Calculate Your BMI",
+    "subtitle": "Body Mass Index",
+    "enterData": "Enter data",
+    "weight": "Weight",
+    "height": "Height",
+    "calculate": "Calculate",
+    "yourBMI": "Your BMI index",
+    "enterToCalculate": "Enter data to calculate",
+    "scale": "BMI Scale",
+    "underweight": "Underweight",
+    "normal": "Normal weight",
+    "overweight": "Overweight",
+    "obese": "Obese"
+  },
+    "testimonials": {
+    "badge": "Testimonials",
+    "title": "What Our Members Say",
+    "subtitle": "Real stories, real results",
+    "member": "Member",
+    "trainer": "Trainer",
+    "boba": "Phoenix Gym has changed my life! The atmosphere is incredible, the equipment is modern, and the trainers are always there to help. In one year I completely transformed my body and have never been in better shape.",
+    "sergej": "As a trainer at Phoenix Gym, I'm proud to work with motivated people who want to achieve their goals. We have a great team and excellent equipment that allows us to deliver the best results.",
+    "dubravko": "Phoenix Gym 365 is not just a gym, it's a family. I've been working here for several years and every day I see our members achieve incredible results. It motivates me to be a better trainer."
+  },
+ "contact": {
+    "badge": "Contact",
+    "title": "Contact Us",
+    "subtitle": "Have questions? Send us a message and we'll get back to you soon",
+    "getInTouch": "Get in touch",
+    "description": "Our team is here to answer all your questions about memberships, training and services we offer.",
+    "phone": "Phone",
+    "email": "Email",
+    "address": "Address",
+    "nameLabel": "Full name",
+    "namePlaceholder": "Your name",
+    "emailLabel": "Email",
+    "emailPlaceholder": "your@email.com",
+    "phoneLabel": "Phone",
+    "phonePlaceholder": "+387 65 123 456",
+    "messageLabel": "Message",
+    "messagePlaceholder": "Your message...",
+    "send": "Send Message",
+    "sending": "Sending...",
+    "success": "Message sent successfully! We'll get back to you soon.",
+    "error": "Error sending message. Please try again.",
+    "errors": {
+      "name": "Name is required",
+      "email": "Email is required",
+      "emailInvalid": "Email is not valid",
+      "phone": "Phone is required",
+      "message": "Message is required"
+    }
+  },
+  "metadata": {
+    "home": {
+      "title": "Phoenix Gym 365 - Modern Gym",
+      "description": "Phoenix Gym 365 - the best gym in town. Professional trainers, modern equipment, 24/7 access."
+    }
+  }
+}
