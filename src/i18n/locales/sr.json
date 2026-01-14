@@ -75,21 +75,41 @@
     "equipment": "Oprema",
     "training": "Treninzi"
   },
-  "bmi": {
+ "bmi": {
     "badge": "BMI Kalkulator",
-    "title": "Izračunaj Svoj BMI",
-    "subtitle": "Body Mass Index - Indeks tjelesne mase",
+    "title": "Profesionalni BMI Kalkulator",
+    "subtitle": "Izračunaj BMI, idealnu težinu i dnevne kalorije",
     "enterData": "Unesi podatke",
+    "gender": "Pol",
+    "male": "Muško",
+    "female": "Žensko",
+    "age": "Godine",
     "weight": "Težina",
     "height": "Visina",
+    "activityLevel": "Nivo aktivnosti",
+    "activityLevels": {
+      "sedentary": "Sedentarni - Malo ili bez vježbanja",
+      "light": "Lagana aktivnost - 1-3 dana/sedmica",
+      "moderate": "Umjerena aktivnost - 3-5 dana/sedmica",
+      "active": "Aktivni - 6-7 dana/sedmica",
+      "veryActive": "Veoma aktivni - Dva puta dnevno"
+    },
     "calculate": "Izračunaj",
     "yourBMI": "Tvoj BMI indeks",
-    "enterToCalculate": "Unesi podatke za izračunavanje",
+    "enterToCalculate": "Unesi sve podatke za detaljan rezultat",
     "scale": "BMI Skala",
     "underweight": "Pothranjenost",
     "normal": "Normalna težina",
     "overweight": "Prekomjerna težina",
-    "obese": "Gojaznost"
+    "obese": "Gojaznost",
+    "idealWeight": "Idealna težina",
+    "dailyCalories": "Dnevne kalorije",
+    "forYourHeight": "Za tvoju visinu",
+    "toMaintainWeight": "Za održavanje težine",
+    "analysis": "Analiza",
+    "belowIdeal": "ispod idealne težine",
+    "aboveIdeal": "iznad idealne težine",
+    "withinIdeal": "Unutar idealne težine"
   },
 "testimonials": {
     "badge": "Recenzije",
