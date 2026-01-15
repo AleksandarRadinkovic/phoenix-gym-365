@@ -150,6 +150,62 @@
       "message": "Message is required"
     }
   },
+"team": {
+  "badge": "Our Team",
+  "title": "Meet Our Team",
+  "subtitle": "Professional trainers with over 10 years of experience, ready to help you achieve your fitness goals",
+  "meetTeam": "Meet Our Professional Team",
+  "description": "Every team member is a certified professional with a passion for fitness",
+  "headTrainer": "Head Trainer",
+  "personalTrainer": "Personal Trainer",
+  "groupInstructor": "Group Training Instructor",
+  "contact": "Contact",
+  "readyToStart": "Ready to Start?",
+  "ctaText": "Schedule a free consultation with our trainers and start your transformation today",
+  "ctaButton": "Contact Us"
+},
+"contact": {
+  "badge": "Contact",
+  "heroTitle": "Contact Us",
+  "heroSubtitle": "We're here to answer all your questions. Send us a message or visit us!",
+  "phoneTitle": "Phone",
+  "phoneDesc": "Call us on weekdays",
+  "emailTitle": "Email",
+  "emailDesc": "We respond within 24h",
+  "addressTitle": "Address",
+  "addressDesc": "Visit us",
+  "hoursTitle": "Working Hours",
+  "hoursDesc": "Open 7 days a week",
+  "formTitle": "Send Us a Message",
+  "formSubtitle": "Fill out the form and we'll get back to you soon",
+  "nameLabel": "Full Name",
+  "namePlaceholder": "Your name",
+  "emailLabel": "Email",
+  "emailPlaceholder": "your@email.com",
+  "phoneLabel": "Phone",
+  "phonePlaceholder": "+387 65 123 456",
+  "subjectLabel": "Subject",
+  "subjectPlaceholder": "Choose a subject",
+  "membershipOption": "Membership",
+  "trainingOption": "Personal Training",
+  "infoOption": "General Information",
+  "otherOption": "Other",
+  "messageLabel": "Message",
+  "messagePlaceholder": "Your message...",
+  "send": "Send Message",
+  "sending": "Sending...",
+  "success": "Message sent successfully! We'll get back to you soon.",
+  "error": "Error sending message. Please try again.",
+  "mapTitle": "Our Location",
+  "mapSubtitle": "Visit us at",
+  "errors": {
+    "name": "Name is required",
+    "email": "Email is required",
+    "emailInvalid": "Email is not valid",
+    "phone": "Phone is required",
+    "message": "Message is required"
+  }
+},
   
   "metadata": {
     "home": {

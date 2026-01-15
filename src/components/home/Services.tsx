@@ -34,8 +34,8 @@ export default function Services({ dict }: ServicesProps) {
     },
     {
       icon: Trophy,
-      title: dict.services.group.title || "Grupni Treninzi",
-      description: dict.services.group.desc || "Motivišuća grupna atmosfera",
+      title: dict.services.group.title || "Suplementi",
+      description: dict.services.group.desc || "Sve na jednom mjestu",
       color: "from-purple-500 to-indigo-500"
     },
     {

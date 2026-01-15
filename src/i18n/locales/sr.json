@@ -57,8 +57,8 @@
       "desc": "Kompletan program za poboljšanje funkcionalnosti"
     },
     "group": {
-      "title": "Grupni Treninzi",
-      "desc": "Motivišuća grupna atmosfera"
+      "title": "Suplementi",
+      "desc": "Sve na jednom mjestu"
     },
     "availability": {
       "title": "24/7 Dostupnost",
@@ -150,7 +150,62 @@
       "message": "Poruka je obavezna"
     }
   },
-
+"team": {
+  "badge": "Naš Tim",
+  "title": "Upoznajte Naš Tim",
+  "subtitle": "Profesionalni treneri sa više od 10 godina iskustva, spremni da vam pomognu da postignete svoje fitnes ciljeve",
+  "meetTeam": "Upoznajte Naš Profesionalni Tim",
+  "description": "Svaki član našeg tima je sertifikovan profesionalac sa strašću prema fitnesu",
+  "headTrainer": "Glavni trener",
+  "personalTrainer": "Personalni trener",
+  "groupInstructor": "Instruktor grupnih treninga",
+  "contact": "Kontakt",
+  "readyToStart": "Spremni za početak?",
+  "ctaText": "Zakažite besplatnu konsultaciju sa našim trenerima i započnite svoju transformaciju danas",
+  "ctaButton": "Kontaktirajte Nas"
+},
+"contact": {
+  "badge": "Kontakt",
+  "heroTitle": "Kontaktirajte Nas",
+  "heroSubtitle": "Tu smo da odgovorimo na sva vaša pitanja. Pošaljite nam poruku ili nas posjetite!",
+  "phoneTitle": "Telefon",
+  "phoneDesc": "Pozovite nas radnim danima",
+  "emailTitle": "Email",
+  "emailDesc": "Odgovaramo u roku od 24h",
+  "addressTitle": "Adresa",
+  "addressDesc": "Posetite nas",
+  "hoursTitle": "Radno vrijeme",
+  "hoursDesc": "Otvoreni 7 dana u sedmici",
+  "formTitle": "Pošaljite Nam Poruku",
+  "formSubtitle": "Popunite formu i javićemo vam se uskoro",
+  "nameLabel": "Ime i prezime",
+  "namePlaceholder": "Vaše ime",
+  "emailLabel": "Email",
+  "emailPlaceholder": "vas@email.com",
+  "phoneLabel": "Telefon",
+  "phonePlaceholder": "+387 65 123 456",
+  "subjectLabel": "Tema",
+  "subjectPlaceholder": "Izaberite temu",
+  "membershipOption": "Članarina",
+  "trainingOption": "Personalni trening",
+  "infoOption": "Opšte informacije",
+  "otherOption": "Ostalo",
+  "messageLabel": "Poruka",
+  "messagePlaceholder": "Vaša poruka...",
+  "send": "Pošalji Poruku",
+  "sending": "Šaljem...",
+  "success": "Poruka uspješno poslata! Javićemo vam se uskoro.",
+  "error": "Greška pri slanju. Pokušajte ponovo.",
+  "mapTitle": "Naša Lokacija",
+  "mapSubtitle": "Posjetite nas na adresi",
+  "errors": {
+    "name": "Ime je obavezno",
+    "email": "Email je obavezan",
+    "emailInvalid": "Email nije validan",
+    "phone": "Telefon je obavezan",
+    "message": "Poruka je obavezna"
+  }
+},
   "metadata": {
     "home": {
       "title": "Phoenix Gym 365 - Moderna Teretana",

@@ -12,7 +12,6 @@ type AboutProps = {
 export default function About({ dict, lang }: AboutProps) {
   const features = [
     dict.about?.feature1 || "24/7 pristup teretani",
-    dict.about?.feature2 || "Besplatno vođenje treninga",
     dict.about?.feature3 || "Moderna oprema",
     dict.about?.feature4 || "Profesionalni treneri"
   ];
