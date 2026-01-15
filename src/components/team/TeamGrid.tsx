@@ -2,12 +2,12 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import Link from "next/link";  // ← DODAJ OVO
+import Link from "next/link";  // 
 import { Instagram, Facebook, Twitter, Mail, Award, ChevronLeft, ChevronRight } from "lucide-react";
 
 type TeamGridProps = {
   dict: any;
-  lang: "sr" | "en";  // ← DODAJ OVO
+  lang: "sr" | "en";  
 };
 
 type Trainer = {
@@ -29,7 +29,7 @@ export default function TeamGrid({ dict, lang }: TeamGridProps) {  // ← DODAJ 
   const trainers: Trainer[] = [
     {
       id: 1,
-      name: "Marko Petrović",
+      name: "Marko marko",
       role: dict.team?.headTrainer || "Glavni trener",
       specialty: "Bodybuilding & Strength",
       images: [
@@ -39,8 +39,6 @@ export default function TeamGrid({ dict, lang }: TeamGridProps) {  // ← DODAJ 
       ],
       socials: {
         instagram: "https://instagram.com/marko_petrovic",
-        facebook: "https://facebook.com/marko.petrovic",
-        twitter: "https://twitter.com/marko_petrovic",
       },
       email: "marko@phoenixgym365.com",
       experience: "12+ godina"
@@ -56,45 +54,11 @@ export default function TeamGrid({ dict, lang }: TeamGridProps) {  // ← DODAJ 
       ],
       socials: {
         instagram: "https://instagram.com/ana_jovanovic",
-        facebook: "https://facebook.com/ana.jovanovic",
       },
       email: "ana@phoenixgym365.com",
       experience: "8+ godina"
     },
-    {
-      id: 3,
-      name: "Stefan Nikolić",
-      role: dict.team?.personalTrainer || "Personalni trener",
-      specialty: "Powerlifting & Nutrition",
-      images: [
-        "/images/treneri/stefan-1.jpg",
-        "/images/treneri/stefan-2.jpg",
-        "/images/treneri/stefan-3.jpg",
-        "/images/treneri/stefan-4.jpg",
-      ],
-      socials: {
-        instagram: "https://instagram.com/stefan_nikolic",
-        twitter: "https://twitter.com/stefan_nikolic",
-      },
-      email: "stefan@phoenixgym365.com",
-      experience: "10+ godina"
-    },
-    {
-      id: 4,
-      name: "Jelena Đorđević",
-      role: dict.team?.groupInstructor || "Instruktor grupnih treninga",
-      specialty: "Yoga & Pilates",
-      images: [
-        "/images/treneri/jelena-1.jpg",
-        "/images/treneri/jelena-2.jpg",
-      ],
-      socials: {
-        instagram: "https://instagram.com/jelena_djordjevic",
-        facebook: "https://facebook.com/jelena.djordjevic",
-      },
-      email: "jelena@phoenixgym365.com",
-      experience: "6+ godina"
-    },
+
   ];
 
   return (
