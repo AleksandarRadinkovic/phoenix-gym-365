@@ -44,7 +44,7 @@ export default function HeroCarousel({ dict }: HeroCarouselProps) {
     const progressTimer = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) return 0;
-        return prev + (100 / 50); // 5000ms / 100ms = 50 steps
+        return prev + (100 / 50);
       });
     }, 100);
 
@@ -83,6 +83,17 @@ export default function HeroCarousel({ dict }: HeroCarouselProps) {
     
     setTouchStart(0);
     setTouchEnd(0);
+  };
+
+  // Funkcija za scroll do kontakt sekcije
+  const scrollToContact = () => {
+    const contactSection = document.getElementById('contact');
+    if (contactSection) {
+      contactSection.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
   };
 
   return (
@@ -151,6 +162,7 @@ export default function HeroCarousel({ dict }: HeroCarouselProps) {
                 initial={{ y: 30, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.6, duration: 0.6 }}
+                onClick={scrollToContact}
                 className="bg-[#ff6b35] hover:bg-[#ff8555] text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 hover:scale-105 shadow-xl hover:shadow-2xl hover:shadow-[#ff6b35]/50"
               >
                 {dict.hero.cta}

@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { Users, Dumbbell, Award, Clock } from "lucide-react";
+import { Dumbbell, Award, Clock, TrendingUp, Zap, Target } from "lucide-react";
 import { motion } from "framer-motion";
 
 type StatsProps = {
@@ -57,12 +57,6 @@ function CountUp({ end, duration = 2000 }: { end: number; duration?: number }) {
 export default function Stats({ dict }: StatsProps) {
   const stats = [
     {
-      icon: Users,
-      value: 500,
-      label: dict.stats.members || "Aktivnih članova",
-      color: "from-blue-500 to-cyan-500"
-    },
-    {
       icon: Dumbbell,
       value: 150,
       label: dict.stats.equipment || "Komada opreme",
@@ -75,10 +69,16 @@ export default function Stats({ dict }: StatsProps) {
       color: "from-yellow-500 to-orange-500"
     },
     {
-      icon: Clock,
-      value: 10,
-      label: dict.stats.experience || "Godina iskustva",
+      icon: Zap,
+      value: 24,
+      label: dict.stats.classes || "Različitih treninga",
       color: "from-purple-500 to-pink-500"
+    },
+    {
+      icon: Target,
+      value: 1000,
+      label: dict.stats.satisfaction || "m² Gym Space",
+      color: "from-green-500 to-emerald-500"
     }
   ];
 

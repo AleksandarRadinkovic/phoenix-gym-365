@@ -2,39 +2,68 @@
 import { useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ChevronLeft, ChevronRight } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 
 type GalleryProps = {
   dict: any;
 };
 
-// Dodaj svoje slike ovde
-const galleryImages = [
-  { src: "/images/gallery/gym-1.jpg", alt: "Gym interior 1", category: "gym" },
-  { src: "/images/gallery/gym-2.jpg", alt: "Gym interior 2", category: "gym" },
-  { src: "/images/gallery/cardio-1.jpg", alt: "Cardio zone", category: "cardio" },
-  { src: "/images/gallery/equipment-1.jpg", alt: "Equipment", category: "equipment" },
-  { src: "/images/gallery/training-1.jpg", alt: "Training session", category: "training" },
-  { src: "/images/gallery/gym-3.jpg", alt: "Gym interior 3", category: "gym" },
-  { src: "/images/gallery/equipment-2.jpg", alt: "Equipment 2", category: "equipment" },
-  { src: "/images/gallery/training-2.jpg", alt: "Training session 2", category: "training" },
-];
+// Funkcija koja generiše listu slika iz foldera
+const generateGalleryImages = () => {
+  const images = [];
+  
+  // Galerija1 - Teretana (12 slika)
+  for (let i = 1; i <= 12; i++) {
+    const ext = i === 12 ? 'jpeg' : 'jpg';
+    images.push({
+      src: `/images/galerija1/${i}.${ext}`,
+      alt: `Teretana ${i}`,
+      category: "teretana"
+    });
+  }
+  
+  // Galerija2 - Sprave (10 slika)
+  for (let i = 1; i <= 10; i++) {
+    images.push({
+      src: `/images/galerija2/${i}.jpeg`,
+      alt: `Sprave ${i}`,
+      category: "sprave"
+    });
+  }
+  
+  // Treneri (15 slika)
+  for (let i = 1; i <= 15; i++) {
+    images.push({
+      src: `/images/treneri/${i}.jpg`,
+      alt: `Trener ${i}`,
+      category: "treneri"
+    });
+  }
+  
+  return images;
+};
+
+const galleryImages = generateGalleryImages();
 
 export default function Gallery({ dict }: GalleryProps) {
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
   const [filter, setFilter] = useState<string>("all");
+  const [showAll, setShowAll] = useState(false);
 
   const categories = [
-    { id: "all", label: dict.gallery.all || "Sve" },
-    { id: "gym", label: dict.gallery.gym || "Teretana" },
-    { id: "cardio", label: dict.gallery.cardio || "Cardio" },
-    { id: "equipment", label: dict.gallery.equipment || "Oprema" },
-    { id: "training", label: dict.gallery.training || "Treninzi" },
+    { id: "all", label: dict.gallery?.all || "Sve" },
+    { id: "teretana", label: dict.gallery?.teretana || "Teretana" },
+    { id: "sprave", label: dict.gallery?.sprave || "Sprave" },
+    { id: "treneri", label: dict.gallery?.treneri || "Treneri" },
   ];
 
   const filteredImages = filter === "all" 
     ? galleryImages 
     : galleryImages.filter(img => img.category === filter);
+
+  // Prikaži samo prvih 16 slika ako showAll nije true
+  const displayedImages = showAll ? filteredImages : filteredImages.slice(0, 16);
+  const hasMore = filteredImages.length > 16;
 
   const openLightbox = (index: number) => {
     setSelectedImage(index);
@@ -58,6 +87,12 @@ export default function Gallery({ dict }: GalleryProps) {
     }
   };
 
+  // Resetuj showAll kad se promeni filter
+  const handleFilterChange = (categoryId: string) => {
+    setFilter(categoryId);
+    setShowAll(false);
+  };
+
   return (
     <section className="relative py-20 lg:py-32 bg-gradient-to-b from-black via-gray-900 to-black overflow-hidden">
       <div className="container mx-auto px-4 relative z-10">
@@ -71,14 +106,14 @@ export default function Gallery({ dict }: GalleryProps) {
         >
           <div className="inline-block px-4 py-2 bg-[#ff6b35]/10 border border-[#ff6b35]/30 rounded-full mb-6">
             <span className="text-[#ff6b35] font-semibold text-sm uppercase tracking-wider">
-              {dict.gallery.badge || "Galerija"}
+              {dict.gallery?.badge || "Galerija"}
             </span>
           </div>
           <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
-            {dict.gallery.title || "Naš Prostor"}
+            {dict.gallery?.title || "Naš Prostor"}
           </h2>
           <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-            {dict.gallery.subtitle || "Pogledajte našu modernu teretanu"}
+            {dict.gallery?.subtitle || "Pogledajte našu modernu teretanu"}
           </p>
         </motion.div>
 
@@ -87,7 +122,7 @@ export default function Gallery({ dict }: GalleryProps) {
           {categories.map((category) => (
             <button
               key={category.id}
-              onClick={() => setFilter(category.id)}
+              onClick={() => handleFilterChange(category.id)}
               className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
                 filter === category.id
                   ? "bg-gradient-to-r from-[#ff6b35] to-red-600 text-white shadow-lg shadow-[#ff6b35]/30"
@@ -105,7 +140,7 @@ export default function Gallery({ dict }: GalleryProps) {
           className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
         >
           <AnimatePresence>
-            {filteredImages.map((image, index) => (
+            {displayedImages.map((image, index) => (
               <motion.div
                 key={image.src}
                 layout
@@ -113,7 +148,7 @@ export default function Gallery({ dict }: GalleryProps) {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}
                 transition={{ duration: 0.3 }}
-                className="relative aspect-square group cursor-pointer overflow-hidden rounded-xl"
+                className="relative aspect-square group cursor-pointer overflow-hidden rounded-xl bg-gray-800"
                 onClick={() => openLightbox(index)}
               >
                 <Image
@@ -134,6 +169,45 @@ export default function Gallery({ dict }: GalleryProps) {
             ))}
           </AnimatePresence>
         </motion.div>
+
+        {/* Show More Button */}
+        {hasMore && !showAll && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="flex justify-center mt-12"
+          >
+            <button
+              onClick={() => setShowAll(true)}
+              className="group px-8 py-4 bg-gradient-to-r from-[#ff6b35] to-red-600 hover:from-[#ff8555] hover:to-red-700 text-white rounded-xl font-semibold text-lg transition-all duration-300 hover:scale-105 shadow-xl flex items-center gap-2"
+            >
+              {dict.gallery?.showMore || "Prikaži Sve"} ({filteredImages.length - 16})
+              <ChevronDown className="w-5 h-5 group-hover:translate-y-1 transition-transform" />
+            </button>
+          </motion.div>
+        )}
+
+        {/* Show Less Button */}
+        {showAll && hasMore && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="flex justify-center mt-12"
+          >
+            <button
+              onClick={() => {
+                setShowAll(false);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className="group px-8 py-4 bg-white/5 hover:bg-white/10 text-white border border-white/10 hover:border-white/20 rounded-xl font-semibold text-lg transition-all duration-300 flex items-center gap-2"
+            >
+              {dict.gallery?.showLess || "Prikaži Manje"}
+              <ChevronDown className="w-5 h-5 rotate-180 group-hover:-translate-y-1 transition-transform" />
+            </button>
+          </motion.div>
+        )}
       </div>
 
       {/* Lightbox */}

@@ -17,20 +17,16 @@ export default function ContactForm({ dict }: ContactFormProps) {
     message: ""
   });
 
-
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
 
-
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
-
 
     if (!formData.name.trim()) {
       newErrors.name = dict.contact?.errors?.name || "Ime je obavezno";
     }
-
 
     if (!formData.email.trim()) {
       newErrors.email = dict.contact?.errors?.email || "Email je obavezan";
@@ -38,42 +34,44 @@ export default function ContactForm({ dict }: ContactFormProps) {
       newErrors.email = dict.contact?.errors?.emailInvalid || "Email nije validan";
     }
 
-
     if (!formData.phone.trim()) {
       newErrors.phone = dict.contact?.errors?.phone || "Telefon je obavezan";
     }
-
 
     if (!formData.message.trim()) {
       newErrors.message = dict.contact?.errors?.message || "Poruka je obavezna";
     }
 
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-
     if (!validateForm()) return;
-
 
     setIsSubmitting(true);
     setSubmitStatus("idle");
 
-
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
 
-
-      setSubmitStatus("success");
-      setFormData({ name: "", email: "", phone: "", message: "" });
-      
-      setTimeout(() => setSubmitStatus("idle"), 5000);
+      if (response.ok) {
+        setSubmitStatus("success");
+        setFormData({ name: "", email: "", phone: "", message: "" });
+        setTimeout(() => setSubmitStatus("idle"), 5000);
+      } else {
+        setSubmitStatus("error");
+      }
     } catch (error) {
+      console.error('Error:', error);
       setSubmitStatus("error");
     } finally {
       setIsSubmitting(false);
@@ -88,7 +86,6 @@ export default function ContactForm({ dict }: ContactFormProps) {
       setErrors(prev => ({ ...prev, [name]: "" }));
     }
   };
-
 
   const contactInfo = [
     {
@@ -111,12 +108,10 @@ export default function ContactForm({ dict }: ContactFormProps) {
     }
   ];
 
-
   return (
-    <section className="relative py-20 lg:py-32 bg-black overflow-hidden">
+    <section id="contact" className="relative py-20 lg:py-32 bg-black overflow-hidden">
       <div className="absolute inset-0 opacity-5" />
       <div className="absolute top-20 right-10 w-96 h-96 bg-[#ff6b35]/10 rounded-full blur-[120px]" />
-
 
       <div className="container mx-auto px-4 relative z-10">
         {/* Section Header */}
@@ -140,7 +135,6 @@ export default function ContactForm({ dict }: ContactFormProps) {
           </p>
         </motion.div>
 
-
         <div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
           {/* Left - Contact Info */}
           <div className="space-y-8">
@@ -157,7 +151,6 @@ export default function ContactForm({ dict }: ContactFormProps) {
                 {dict.contact?.description || "Naš tim je tu da odgovori na sva vaša pitanja o članarinama, treninzima i uslugama koje nudimo."}
               </p>
             </motion.div>
-
 
             {/* Contact Info Cards */}
             <div className="space-y-4">
@@ -187,7 +180,6 @@ export default function ContactForm({ dict }: ContactFormProps) {
               })}
             </div>
 
-
             {/* Google Map */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -208,7 +200,6 @@ export default function ContactForm({ dict }: ContactFormProps) {
               />
             </motion.div>
           </div>
-
 
           {/* Right - Contact Form */}
           <motion.div
@@ -243,7 +234,6 @@ export default function ContactForm({ dict }: ContactFormProps) {
                 )}
               </div>
 
-
               {/* Email Input */}
               <div>
                 <label htmlFor="email" className="block text-white font-medium mb-2">
@@ -267,7 +257,6 @@ export default function ContactForm({ dict }: ContactFormProps) {
                   </div>
                 )}
               </div>
-
 
               {/* Phone Input */}
               <div>
@@ -293,7 +282,6 @@ export default function ContactForm({ dict }: ContactFormProps) {
                 )}
               </div>
 
-
               {/* Message Textarea */}
               <div>
                 <label htmlFor="message" className="block text-white font-medium mb-2">
@@ -318,7 +306,6 @@ export default function ContactForm({ dict }: ContactFormProps) {
                 )}
               </div>
 
-
               {/* Submit Button */}
               <button
                 type="submit"
@@ -338,7 +325,6 @@ export default function ContactForm({ dict }: ContactFormProps) {
                 )}
               </button>
 
-
               {/* Success/Error Messages */}
               {submitStatus === "success" && (
                 <motion.div
@@ -352,7 +338,6 @@ export default function ContactForm({ dict }: ContactFormProps) {
                   </div>
                 </motion.div>
               )}
-
 
               {submitStatus === "error" && (
                 <motion.div

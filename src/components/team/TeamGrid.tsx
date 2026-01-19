@@ -2,117 +2,303 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import Link from "next/link";  // 
-import { Instagram, Facebook, Twitter, Mail, Award, ChevronLeft, ChevronRight } from "lucide-react";
+import Link from "next/link";
+import { Instagram, Award, ChevronLeft, ChevronRight, X } from "lucide-react";
 
 type TeamGridProps = {
   dict: any;
-  lang: "sr" | "en";  
+  lang: "sr" | "en";
 };
 
 type Trainer = {
   id: number;
   name: string;
   role: string;
-  specialty: string;
   images: string[];
   socials: {
     instagram?: string;
-    facebook?: string;
-    twitter?: string;
   };
-  email?: string;
   experience: string;
 };
 
-export default function TeamGrid({ dict, lang }: TeamGridProps) {  // ← DODAJ lang
+export default function TeamGrid({ dict, lang }: TeamGridProps) {
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxImages, setLightboxImages] = useState<string[]>([]);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+  const [trainerName, setTrainerName] = useState("");
+
   const trainers: Trainer[] = [
     {
       id: 1,
-      name: "Marko marko",
-      role: dict.team?.headTrainer || "Glavni trener",
-      specialty: "Bodybuilding & Strength",
-      images: [
-        "/images/treneri/marko-1.jpg",
-        "/images/treneri/marko-2.jpg",
-        "/images/treneri/marko-3.jpg",
-      ],
+      name: "Dubravko Radić",
+      role: dict.team?.personalTrainer || "Personalni trener",
+      images: ["/images/treneri/1.png"],
       socials: {
-        instagram: "https://instagram.com/marko_petrovic",
+        instagram: "https://www.instagram.com/dubravko_radic/",
       },
-      email: "marko@phoenixgym365.com",
-      experience: "12+ godina"
+      experience: dict.team?.personalTrainer || "Personalni trener"
     },
     {
       id: 2,
-      name: "Ana Jovanović",
+      name: "Sara Rončević",
       role: dict.team?.personalTrainer || "Personalni trener",
-      specialty: "Functional Training & CrossFit",
-      images: [
-        "/images/treneri/ana-1.jpg",
-        "/images/treneri/ana-2.jpg",
-      ],
+      images: ["/images/treneri/11.png"],
       socials: {
-        instagram: "https://instagram.com/ana_jovanovic",
+        instagram: "https://www.instagram.com/sara__roncevic/",
       },
-      email: "ana@phoenixgym365.com",
-      experience: "8+ godina"
+      experience: dict.team?.personalTrainer || "Personalni trener"
     },
-
+    {
+      id: 3,
+      name: "Biljana Milinković",
+      role: dict.team?.personalTrainer || "Personalni trener",
+      images: ["/images/treneri/4.png"],
+      socials: {
+        instagram: "https://www.instagram.com/biljaaa.thecoach/",
+      },
+      experience: dict.team?.personalTrainer || "Personalni trener"
+    },
+    {
+      id: 4,
+      name: "Nemanja Šimurdić",
+      role: dict.team?.personalTrainer || "Personalni trener",
+      images: ["/images/treneri/8.png"],
+      socials: {
+        instagram: "https://www.instagram.com/nemanja.s_fitness/",
+      },
+      experience: dict.team?.personalTrainer || "Personalni trener"
+    },
+    {
+      id: 5,
+      name: "Sergej Janjić",
+      role: dict.team?.personalTrainer || "Personalni trener",
+      images: ["/images/treneri/6.png"],
+      socials: {
+        instagram: "https://www.instagram.com/janjiccsergej/",
+      },
+      experience: dict.team?.personalTrainer || "Personalni trener"
+    },
+    {
+      id: 6,
+      name: "Milivoj Vrhovca",
+      role: dict.team?.personalTrainer || "Personalni trener",
+      images: ["/images/treneri/7.png"],
+      socials: {
+        instagram: "https://www.instagram.com/vrhovac_m99/",
+      },
+      experience: dict.team?.personalTrainer || "Personalni trener"
+    },
+    {
+      id: 7,
+      name: "Ivana Vučković",
+      role: dict.team?.personalTrainer || "Personalni trener",
+      images: ["/images/treneri/5.png"],
+      socials: {
+        instagram: "https://www.instagram.com/ivana_ifbb_athlete/",
+      },
+      experience: dict.team?.personalTrainer || "Personalni trener"
+    },
+    {
+      id: 8,
+      name: "Dajana Kovačević",
+      role: dict.team?.personalTrainer || "Personalni trener",
+      images: ["/images/treneri/8.jpg"],
+      socials: {
+        instagram: "https://www.instagram.com/dajanak_fit/",
+      },
+      experience: dict.team?.personalTrainer || "Personalni trener"
+    },
+    {
+      id: 9,
+      name: "Matea Kos",
+      role: dict.team?.personalTrainer || "Personalni trener",
+      images: ["/images/treneri/10.jpg"],
+      socials: {
+        instagram: "",
+      },
+      experience: dict.team?.personalTrainer || "Personalni trener"
+    },
+    {
+      id: 10,
+      name: "Ognjen Nunić",
+      role: dict.team?.personalTrainer || "Personalni trener",
+      images: ["/images/treneri/10.png"],
+      socials: {
+        instagram: "",
+      },
+      experience: dict.team?.personalTrainer || "Personalni trener"
+    },
+    {
+      id: 11,
+      name: "Jovan Stojanović",
+      role: dict.team?.personalTrainer || "Personalni trener",
+      images: ["/images/treneri/9.png"],
+      socials: {
+        instagram: "https://www.instagram.com/jovan.s99/",
+      },
+      experience: dict.team?.personalTrainer || "Personalni trener"
+    },
+    {
+      id: 12,
+      name: "Ognjen Savović",
+      role: dict.team?.personalTrainer || "Personalni trener",
+      images: ["/images/treneri/2.png"],
+      socials: {
+        instagram: "https://www.instagram.com/universal_human.fit/",
+      },
+      experience: dict.team?.personalTrainer || "Personalni trener"
+    },
   ];
 
+  const openLightbox = (images: string[], index: number, name: string) => {
+    setLightboxImages(images);
+    setLightboxIndex(index);
+    setTrainerName(name);
+    setLightboxOpen(true);
+    document.body.style.overflow = 'hidden';
+  };
+
+  const closeLightbox = () => {
+    setLightboxOpen(false);
+    document.body.style.overflow = 'unset';
+  };
+
+  const nextImage = () => {
+    setLightboxIndex((prev) => (prev + 1) % lightboxImages.length);
+  };
+
+  const prevImage = () => {
+    setLightboxIndex((prev) => (prev - 1 + lightboxImages.length) % lightboxImages.length);
+  };
+
   return (
-    <section className="py-20 lg:py-32 bg-black">
-      <div className="container mx-auto px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16"
-        >
-          <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">
-            {dict.team?.meetTeam || "Upoznajte Naš Profesionalni Tim"}
-          </h2>
-          <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-            {dict.team?.description || "Svaki član našeg tima je sertifikovan profesionalac sa strašću prema fitnesu"}
-          </p>
-        </motion.div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {trainers.map((trainer, index) => (
-            <TrainerCard key={trainer.id} trainer={trainer} index={index} dict={dict} />
-          ))}
-        </div>
-
-        {/* CTA Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.4, duration: 0.6 }}
-          className="mt-20 text-center bg-gradient-to-br from-gray-900 to-black border border-white/10 rounded-3xl p-12"
-        >
-          <h3 className="text-3xl font-bold text-white mb-4">
-            {dict.team?.readyToStart || "Spremni za početak?"}
-          </h3>
-          <p className="text-gray-400 text-lg mb-8 max-w-2xl mx-auto">
-            {dict.team?.ctaText || "Zakažite besplatnu konsultaciju sa našim trenerima i započnite svoju transformaciju danas"}
-          </p>
-          <Link
-            href={`/${lang}/kontakt`}  
-            className="inline-block bg-gradient-to-r from-[#ff6b35] to-red-600 hover:from-[#ff8555] hover:to-red-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 hover:scale-105 shadow-xl"
+    <>
+      <section className="py-20 lg:py-32 bg-black">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-16"
           >
-            {dict.team?.ctaButton || "Kontaktirajte Nas"}
-          </Link>
+            <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">
+              {dict.team?.meetTeam || "Upoznajte Naš Profesionalni Tim"}
+            </h2>
+            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+              {dict.team?.description || "Svaki član našeg tima je sertifikovan profesionalac sa strašću prema fitnesu"}
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {trainers.map((trainer, index) => (
+              <TrainerCard 
+                key={trainer.id} 
+                trainer={trainer} 
+                index={index} 
+                dict={dict}
+                onImageClick={openLightbox}
+              />
+            ))}
+          </div>
+
+          {/* CTA Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.4, duration: 0.6 }}
+            className="mt-20 text-center bg-gradient-to-br from-gray-900 to-black border border-white/10 rounded-3xl p-12"
+          >
+            <h3 className="text-3xl font-bold text-white mb-4">
+              {dict.team?.readyToStart || "Spremni za početak?"}
+            </h3>
+            <p className="text-gray-400 text-lg mb-8 max-w-2xl mx-auto">
+              {dict.team?.ctaText || "Zakažite besplatnu konsultaciju sa našim trenerima i započnite svoju transformaciju danas"}
+            </p>
+            <Link
+              href={`/${lang}/kontakt`}
+              className="inline-block bg-gradient-to-r from-[#ff6b35] to-red-600 hover:from-[#ff8555] hover:to-red-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 hover:scale-105 shadow-xl"
+            >
+              {dict.team?.ctaButton || "Kontaktirajte Nas"}
+            </Link>
+          </motion.div>
+        </div>
+      </section>
+
+    {/* Lightbox Modal */}
+    <AnimatePresence>
+      {lightboxOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4"
+          onClick={closeLightbox}
+        >
+          {/* Navigation Arrows */}
+          {lightboxImages.length > 1 && (
+            <>
+              <button
+                onClick={(e) => { e.stopPropagation(); prevImage(); }}
+                className="fixed left-4 top-1/2 -translate-y-1/2 z-[60] bg-white/20 hover:bg-[#ff6b35] text-white p-4 rounded-full transition-all backdrop-blur-sm"
+                aria-label="Previous"
+              >
+                <ChevronLeft className="w-8 h-8" />
+              </button>
+              <button
+                onClick={(e) => { e.stopPropagation(); nextImage(); }}
+                className="fixed right-4 top-1/2 -translate-y-1/2 z-[60] bg-white/20 hover:bg-[#ff6b35] text-white p-4 rounded-full transition-all backdrop-blur-sm"
+                aria-label="Next"
+              >
+                <ChevronRight className="w-8 h-8" />
+              </button>
+            </>
+          )}
+
+          {/* Image Container - BEZ stopPropagation */}
+          <motion.div
+            key={lightboxIndex}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            transition={{ duration: 0.3 }}
+            className="relative w-full h-full max-w-5xl max-h-[85vh]"
+          >
+            <Image
+              src={lightboxImages[lightboxIndex]}
+              alt={`${trainerName} - ${lightboxIndex + 1}`}
+              fill
+              className="object-contain"
+              sizes="90vw"
+            />
+          </motion.div>
+
+          {/* Counter */}
+          <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-[60] bg-black/70 backdrop-blur-sm text-white px-6 py-3 rounded-full text-sm font-semibold border border-white/20">
+            {trainerName} - {lightboxIndex + 1} / {lightboxImages.length}
+          </div>
         </motion.div>
-      </div>
-    </section>
+      )}
+    </AnimatePresence>
+
+
+    </>
   );
 }
 
-// Trainer Card Component sa slajderom
-function TrainerCard({ trainer, index, dict }: { trainer: any; index: number; dict: any }) {
+// Trainer Card Component
+function TrainerCard({ 
+  trainer, 
+  index, 
+  dict,
+  onImageClick 
+}: { 
+  trainer: any; 
+  index: number; 
+  dict: any;
+  onImageClick: (images: string[], index: number, name: string) => void;
+}) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [direction, setDirection] = useState(0);
 
@@ -158,7 +344,10 @@ function TrainerCard({ trainer, index, dict }: { trainer: any; index: number; di
     >
       <div className="relative bg-gradient-to-br from-gray-900 to-black border border-white/10 rounded-2xl overflow-hidden hover:border-[#ff6b35]/50 transition-all duration-300">
         {/* Image Slider */}
-        <div className="relative h-80 overflow-hidden">
+        <div 
+          className="relative h-80 overflow-hidden cursor-pointer"
+          onClick={() => onImageClick(trainer.images, currentImageIndex, trainer.name)}
+        >
           <AnimatePresence initial={false} custom={direction}>
             <motion.div
               key={currentImageIndex}
@@ -200,26 +389,27 @@ function TrainerCard({ trainer, index, dict }: { trainer: any; index: number; di
           {trainer.images.length > 1 && (
             <>
               <button
-                onClick={() => paginate(-1)}
-                className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-[#ff6b35] text-white p-2 rounded-full transition-all duration-300 opacity-0 group-hover:opacity-100"
+                onClick={(e) => { e.stopPropagation(); paginate(-1); }}
+                className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-[#ff6b35] text-white p-2 rounded-full transition-all duration-300 opacity-0 group-hover:opacity-100 z-10"
                 aria-label="Previous image"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
               <button
-                onClick={() => paginate(1)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-[#ff6b35] text-white p-2 rounded-full transition-all duration-300 opacity-0 group-hover:opacity-100"
+                onClick={(e) => { e.stopPropagation(); paginate(1); }}
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-[#ff6b35] text-white p-2 rounded-full transition-all duration-300 opacity-0 group-hover:opacity-100 z-10"
                 aria-label="Next image"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>
 
               {/* Image Indicators */}
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
                 {trainer.images.map((_: any, idx: number) => (
                   <button
                     key={idx}
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.stopPropagation();
                       setDirection(idx > currentImageIndex ? 1 : -1);
                       setCurrentImageIndex(idx);
                     }}
@@ -247,61 +437,21 @@ function TrainerCard({ trainer, index, dict }: { trainer: any; index: number; di
           <h3 className="text-2xl font-bold text-white mb-1">
             {trainer.name}
           </h3>
-          <p className="text-[#ff6b35] font-semibold mb-2">
+          <p className="text-[#ff6b35] font-semibold mb-4">
             {trainer.role}
-          </p>
-          <p className="text-gray-400 text-sm mb-4">
-            {trainer.specialty}
           </p>
 
           {/* Social Links */}
-          <div className="flex flex-wrap gap-2 mb-4">
-            {trainer.socials.instagram && (
-              <a
-                href={trainer.socials.instagram}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1 bg-white/5 hover:bg-[#E4405F] text-white py-2 px-3 rounded-lg text-sm font-medium transition-all duration-300 border border-white/10 hover:border-[#E4405F]"
-                aria-label="Instagram"
-              >
-                <Instagram className="w-4 h-4" />
-                <span className="hidden sm:inline">Instagram</span>
-              </a>
-            )}
-            {trainer.socials.facebook && (
-              <a
-                href={trainer.socials.facebook}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1 bg-white/5 hover:bg-[#1877F2] text-white py-2 px-3 rounded-lg text-sm font-medium transition-all duration-300 border border-white/10 hover:border-[#1877F2]"
-                aria-label="Facebook"
-              >
-                <Facebook className="w-4 h-4" />
-                <span className="hidden sm:inline">Facebook</span>
-              </a>
-            )}
-            {trainer.socials.twitter && (
-              <a
-                href={trainer.socials.twitter}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1 bg-white/5 hover:bg-[#1DA1F2] text-white py-2 px-3 rounded-lg text-sm font-medium transition-all duration-300 border border-white/10 hover:border-[#1DA1F2]"
-                aria-label="Twitter"
-              >
-                <Twitter className="w-4 h-4" />
-                <span className="hidden sm:inline">Twitter</span>
-              </a>
-            )}
-          </div>
-
-          {/* Email */}
-          {trainer.email && (
+          {trainer.socials.instagram && (
             <a
-              href={`mailto:${trainer.email}`}
-              className="inline-flex items-center gap-2 text-gray-400 hover:text-[#ff6b35] transition-colors text-sm"
+              href={trainer.socials.instagram}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 bg-white/5 hover:bg-[#E4405F] text-white py-2 px-3 rounded-lg text-sm font-medium transition-all duration-300 border border-white/10 hover:border-[#E4405F] w-full justify-center"
+              aria-label="Instagram"
             >
-              <Mail className="w-4 h-4" />
-              {dict.team?.contact || "Kontakt"}
+              <Instagram className="w-4 h-4" />
+              <span>Instagram</span>
             </a>
           )}
         </div>

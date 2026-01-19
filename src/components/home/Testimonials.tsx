@@ -15,23 +15,23 @@ export default function Testimonials({ dict }: TestimonialsProps) {
     {
       name: "Boba",
       role: dict.testimonials.member || "Član",
-      image: "/images/testimonials/boba.jpg",
+      image: "/images/testimonials/2.jpg",
       rating: 5,
-      text: dict.testimonials.boba || "Phoenix Gym je promijenio moj život! Atmosfera je nevjerovatna, oprema moderna, a treneri su uvijek tu da pomognu. Za godinu dana sam potpuno transformisao svoje tijelo i nikada nisam bio u boljoj formi."
+      text: dict.testimonials.boba || "Posjeduju svu potrebnu opremu, a činjenica da nikad ne zatvara je pun pogodak."
     },
     {
       name: "Sergej Janjić",
       role: dict.testimonials.trainer || "Trener",
-      image: "/images/testimonials/sergej.jpg",
+      image: "/images/testimonials/1.jpg",
       rating: 5,
-      text: dict.testimonials.sergej || "Kao trener u Phoenix Gym-u, ponosan sam što radim sa motiviranim ljudima koji žele da postignu svoje ciljeve. Imamo sjajan tim i odličnu opremu koja nam omogućava da pružimo najbolje rezultate."
+      text: dict.testimonials.sergej || "Sprave su nove i kvalitetne, atmosfera je motivirajuća, a treneri su uvijek spremni za profesionalan savjet."
     },
     {
       name: "Dubravko Radić",
       role: dict.testimonials.trainer || "Trener",
-      image: "/images/testimonials/dubravko.jpg",
+      image: "/images/testimonials/3.jpg",
       rating: 5,
-      text: dict.testimonials.dubravko || "Phoenix Gym 365 nije samo teretana, to je porodica. Radim ovdje već nekoliko godina i svaki dan vidim kako naši članovi postižu nevjerovatne rezultate. To me motivira da budem bolji trener."
+      text: dict.testimonials.dubravko || "Apsolutno najbolja teretana u Banjoj Luci jer radi 24/7/365, što je savršeno za moj raspored."
     }
   ];
 

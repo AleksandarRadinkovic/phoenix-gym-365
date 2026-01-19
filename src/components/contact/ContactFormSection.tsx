@@ -45,28 +45,38 @@ export default function ContactFormSection({ dict }: ContactFormSectionProps) {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
 
-    if (!validateForm()) return;
+  if (!validateForm()) return;
 
-    setIsSubmitting(true);
-    setSubmitStatus("idle");
+  setIsSubmitting(true);
+  setSubmitStatus("idle");
 
-    try {
-      // TODO: Dodaj API endpoint za slanje emaila (Resend, EmailJS, itd)
-      await new Promise(resolve => setTimeout(resolve, 1500));
+  try {
+    const response = await fetch('/api/contact', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData),
+    });
 
+    if (response.ok) {
       setSubmitStatus("success");
       setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
-      
       setTimeout(() => setSubmitStatus("idle"), 5000);
-    } catch (error) {
+    } else {
       setSubmitStatus("error");
-    } finally {
-      setIsSubmitting(false);
     }
-  };
+  } catch (error) {
+    console.error('Error:', error);
+    setSubmitStatus("error");
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;

@@ -21,10 +21,10 @@
     "cta": "Počni Danas"
   },
   "stats": {
-    "members": "Aktivnih članova",
-    "equipment": "Komada opreme",
-    "trainers": "Profesionalnih trenera",
-    "experience": "Godina iskustva"
+  "equipment": "Komada opreme",
+  "trainers": "Profesionalnih trenera",
+  "classes": "Različitih treninga",
+  "satisfaction": "m² Gym Space"
   },
   "about": {
     "badge": "O nama",
@@ -65,16 +65,17 @@
       "desc": "Pristup teretani u bilo koje doba"
     }
   },
-  "gallery": {
-    "badge": "Galerija",
-    "title": "Naš Prostor",
-    "subtitle": "Pogledajte našu modernu teretanu",
-    "all": "Sve",
-    "gym": "Teretana",
-    "cardio": "Cardio",
-    "equipment": "Oprema",
-    "training": "Treninzi"
-  },
+"gallery": {
+  "badge": "Galerija",
+  "title": "Naš Prostor",
+  "subtitle": "Pogledajte našu modernu teretanu",
+  "all": "Sve",
+  "teretana": "Teretana",
+  "sprave": "Sprave",
+  "treneri": "Treneri",
+  "showMore": "Prikaži Sve",
+  "showLess": "Prikaži Manje"
+},
  "bmi": {
     "badge": "BMI Kalkulator",
     "title": "Profesionalni BMI Kalkulator",
@@ -117,38 +118,9 @@
     "subtitle": "Prave priče, pravi rezultati",
     "member": "Član",
     "trainer": "Trener",
-    "boba": "Phoenix Gym je promijenio moj život! Atmosfera je nevjerovatna, oprema moderna, a treneri su uvijek tu da pomognu. Za godinu dana sam potpuno transformisao svoje tijelo i nikada nisam bio u boljoj formi.",
-    "sergej": "Kao trener u Phoenix Gym-u, ponosan sam što radim sa motiviranim ljudima koji žele da postignu svoje ciljeve. Imamo sjajan tim i odličnu opremu koja nam omogućava da pružimo najbolje rezultate.",
-    "dubravko": "Phoenix Gym 365 nije samo teretana, to je porodica. Radim ovdje već nekoliko godina i svaki dan vidim kako naši članovi postižu nevjerovatne rezultate. To me motivira da budem bolji trener."
-  },
-    "contact": {
-    "badge": "Kontakt",
-    "title": "Kontaktirajte Nas",
-    "subtitle": "Imate pitanja? Pošaljite nam poruku i javićemo vam se uskoro",
-    "getInTouch": "Stupite u kontakt",
-    "description": "Naš tim je tu da odgovori na sva vaša pitanja o članarinama, treninzima i uslugama koje nudimo.",
-    "phone": "Telefon",
-    "email": "Email",
-    "address": "Adresa",
-    "nameLabel": "Ime i prezime",
-    "namePlaceholder": "Vaše ime",
-    "emailLabel": "Email",
-    "emailPlaceholder": "vas@email.com",
-    "phoneLabel": "Telefon",
-    "phonePlaceholder": "+387 65 123 456",
-    "messageLabel": "Poruka",
-    "messagePlaceholder": "Vaša poruka...",
-    "send": "Pošalji Poruku",
-    "sending": "Šaljem...",
-    "success": "Poruka uspješno poslata! Javićemo vam se uskoro.",
-    "error": "Greška pri slanju. Pokušajte ponovo.",
-    "errors": {
-      "name": "Ime je obavezno",
-      "email": "Email je obavezan",
-      "emailInvalid": "Email nije validan",
-      "phone": "Telefon je obavezan",
-      "message": "Poruka je obavezna"
-    }
+    "boba": "Posjeduju svu potrebnu opremu, a činjenica da nikad ne zatvara je pun pogodak.",
+    "sergej": "Sprave su nove i kvalitetne, atmosfera je motivirajuća, a treneri su uvijek spremni za profesionalan savjet.",
+    "dubravko": "Apsolutno najbolja teretana u Banjoj Luci jer radi 24/7/365, što je savršeno za moj raspored."
   },
 "team": {
   "badge": "Naš Tim",
@@ -173,7 +145,7 @@
   "emailTitle": "Email",
   "emailDesc": "Odgovaramo u roku od 24h",
   "addressTitle": "Adresa",
-  "addressDesc": "Posetite nas",
+  "addressDesc": "Posjetite nas",
   "hoursTitle": "Radno vrijeme",
   "hoursDesc": "Otvoreni 7 dana u sedmici",
   "formTitle": "Pošaljite Nam Poruku",

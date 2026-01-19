@@ -21,10 +21,10 @@
     "cta": "Start Today"
   },
   "stats": {
-    "members": "Active Members",
-    "equipment": "Pieces of Equipment",
-    "trainers": "Professional Trainers",
-    "experience": "Years of Experience"
+  "equipment": "Pieces of Equipment",
+  "trainers": "Professional Trainers",
+  "classes": "Different Workouts",
+  "satisfaction": "% Satisfied Members"
   },
   "about": {
     "badge": "About Us",
@@ -70,10 +70,11 @@
     "title": "Our Space",
     "subtitle": "Check out our modern gym",
     "all": "All",
-    "gym": "Gym",
-    "cardio": "Cardio",
-    "equipment": "Equipment",
-    "training": "Training"
+    "teretana": "Gym",
+    "sprave": "Equipment",
+    "treneri": "Trainers",
+    "showMore": "Show All",
+    "showLess": "Show Less"
   },
 "bmi": {
     "badge": "BMI Calculator",
@@ -117,39 +118,11 @@
     "subtitle": "Real stories, real results",
     "member": "Member",
     "trainer": "Trainer",
-    "boba": "Phoenix Gym has changed my life! The atmosphere is incredible, the equipment is modern, and the trainers are always there to help. In one year I completely transformed my body and have never been in better shape.",
-    "sergej": "As a trainer at Phoenix Gym, I'm proud to work with motivated people who want to achieve their goals. We have a great team and excellent equipment that allows us to deliver the best results.",
-    "dubravko": "Phoenix Gym 365 is not just a gym, it's a family. I've been working here for several years and every day I see our members achieve incredible results. It motivates me to be a better trainer."
+    "boba": "They have all the equipment I need, and the fact that they never close is absolutely perfect.",
+    "sergej": "The machines are new and high quality, the atmosphere is motivating, and the trainers are always ready with professional advice.",
+    "dubravko": "Absolutely the best gym in Banja Luka because it’s open 24/7/365, which is perfect for my schedule."
   },
- "contact": {
-    "badge": "Contact",
-    "title": "Contact Us",
-    "subtitle": "Have questions? Send us a message and we'll get back to you soon",
-    "getInTouch": "Get in touch",
-    "description": "Our team is here to answer all your questions about memberships, training and services we offer.",
-    "phone": "Phone",
-    "email": "Email",
-    "address": "Address",
-    "nameLabel": "Full name",
-    "namePlaceholder": "Your name",
-    "emailLabel": "Email",
-    "emailPlaceholder": "your@email.com",
-    "phoneLabel": "Phone",
-    "phonePlaceholder": "+387 65 123 456",
-    "messageLabel": "Message",
-    "messagePlaceholder": "Your message...",
-    "send": "Send Message",
-    "sending": "Sending...",
-    "success": "Message sent successfully! We'll get back to you soon.",
-    "error": "Error sending message. Please try again.",
-    "errors": {
-      "name": "Name is required",
-      "email": "Email is required",
-      "emailInvalid": "Email is not valid",
-      "phone": "Phone is required",
-      "message": "Message is required"
-    }
-  },
+
 "team": {
   "badge": "Our Team",
   "title": "Meet Our Team",
