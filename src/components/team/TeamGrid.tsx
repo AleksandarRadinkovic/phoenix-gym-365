@@ -114,7 +114,7 @@ export default function TeamGrid({ dict, lang }: TeamGridProps) {
       role: dict.team?.personalTrainer || "Personalni trener",
       images: ["/images/treneri/10.jpg"],
       socials: {
-        instagram: "",
+        instagram: "https://www.instagram.com/mateaaaaak/",
       },
       experience: dict.team?.personalTrainer || "Personalni trener"
     },
@@ -124,7 +124,7 @@ export default function TeamGrid({ dict, lang }: TeamGridProps) {
       role: dict.team?.personalTrainer || "Personalni trener",
       images: ["/images/treneri/10.png"],
       socials: {
-        instagram: "",
+        instagram: "https://www.instagram.com/ognjen.nunic/",
       },
       experience: dict.team?.personalTrainer || "Personalni trener"
     },

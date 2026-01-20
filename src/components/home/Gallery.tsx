@@ -8,11 +8,9 @@ type GalleryProps = {
   dict: any;
 };
 
-// Funkcija koja generiše listu slika iz foldera
 const generateGalleryImages = () => {
   const images = [];
   
-  // Galerija1 - Teretana (12 slika)
   for (let i = 1; i <= 12; i++) {
     const ext = i === 12 ? 'jpeg' : 'jpg';
     images.push({
@@ -22,7 +20,6 @@ const generateGalleryImages = () => {
     });
   }
   
-  // Galerija2 - Sprave (10 slika)
   for (let i = 1; i <= 10; i++) {
     images.push({
       src: `/images/galerija2/${i}.jpeg`,
@@ -31,17 +28,33 @@ const generateGalleryImages = () => {
     });
   }
   
-  // Treneri (15 slika)
-  for (let i = 1; i <= 15; i++) {
+  const trenerImages = [
+    '/images/treneri/1.png',
+    '/images/treneri/2.png',
+    '/images/treneri/3.png',
+    '/images/treneri/4.png',
+    '/images/treneri/5.png',
+    '/images/treneri/6.png',
+    '/images/treneri/7.png',
+    '/images/treneri/8.jpg',
+    '/images/treneri/8.png',
+    '/images/treneri/9.png',
+    '/images/treneri/10.jpg',
+    '/images/treneri/10.png',
+    '/images/treneri/11.png',
+  ];
+
+  trenerImages.forEach((path, i) => {
     images.push({
-      src: `/images/treneri/${i}.jpg`,
-      alt: `Trener ${i}`,
+      src: path,
+      alt: `Trener ${i + 1}`,
       category: "treneri"
     });
-  }
-  
+  });
+
   return images;
 };
+
 
 const galleryImages = generateGalleryImages();
 
@@ -61,7 +74,6 @@ export default function Gallery({ dict }: GalleryProps) {
     ? galleryImages 
     : galleryImages.filter(img => img.category === filter);
 
-  // Prikaži samo prvih 16 slika ako showAll nije true
   const displayedImages = showAll ? filteredImages : filteredImages.slice(0, 16);
   const hasMore = filteredImages.length > 16;
 
@@ -210,68 +222,68 @@ export default function Gallery({ dict }: GalleryProps) {
         )}
       </div>
 
-      {/* Lightbox */}
-      <AnimatePresence>
-        {selectedImage !== null && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center"
-            onClick={closeLightbox}
-          >
-            {/* Close button */}
-            <button
-              onClick={closeLightbox}
-              className="absolute top-4 right-4 z-50 text-white p-3 hover:bg-white/10 rounded-full transition-colors"
-              aria-label="Close"
-            >
-              <X size={32} />
-            </button>
+  {/* Lightbox */}
+  <AnimatePresence>
+    {selectedImage !== null && (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4"
+        onClick={closeLightbox}
+      >
+        {/* Close button - VEĆI I VIDLJIVIJI */}
+        <button
+          onClick={closeLightbox}
+          className="fixed top-4 right-4 z-[60] bg-[#ff6b35] hover:bg-red-600 text-white p-4 rounded-full transition-all shadow-2xl"
+          aria-label="Close"
+        >
+          <X className="w-8 h-8" />
+        </button>
 
-            {/* Navigation buttons */}
-            <button
-              onClick={(e) => { e.stopPropagation(); prevImage(); }}
-              className="absolute left-4 z-50 text-white p-3 hover:bg-white/10 rounded-full transition-colors"
-              aria-label="Previous"
-            >
-              <ChevronLeft size={32} />
-            </button>
-            <button
-              onClick={(e) => { e.stopPropagation(); nextImage(); }}
-              className="absolute right-4 z-50 text-white p-3 hover:bg-white/10 rounded-full transition-colors"
-              aria-label="Next"
-            >
-              <ChevronRight size={32} />
-            </button>
+        {/* Navigation buttons */}
+        <button
+          onClick={(e) => { e.stopPropagation(); prevImage(); }}
+          className="fixed left-4 top-1/2 -translate-y-1/2 z-[60] bg-white/20 hover:bg-[#ff6b35] backdrop-blur-sm text-white p-4 rounded-full transition-all"
+          aria-label="Previous"
+        >
+          <ChevronLeft className="w-8 h-8" />
+        </button>
+        <button
+          onClick={(e) => { e.stopPropagation(); nextImage(); }}
+          className="fixed right-4 top-1/2 -translate-y-1/2 z-[60] bg-white/20 hover:bg-[#ff6b35] backdrop-blur-sm text-white p-4 rounded-full transition-all"
+          aria-label="Next"
+        >
+          <ChevronRight className="w-8 h-8" />
+        </button>
 
-            {/* Image */}
-            <motion.div
-              key={selectedImage}
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="relative w-[90vw] h-[90vh] max-w-6xl"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <Image
-                src={filteredImages[selectedImage].src}
-                alt={filteredImages[selectedImage].alt}
-                fill
-                className="object-contain"
-                sizes="90vw"
-                quality={95}
-              />
-            </motion.div>
+        {/* Image - UKLONI stopPropagation */}
+        <motion.div
+          key={selectedImage}
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.8, opacity: 0 }}
+          transition={{ duration: 0.3 }}
+          className="relative w-full h-full max-w-6xl max-h-[85vh]"
+        >
+          <Image
+            src={filteredImages[selectedImage].src}
+            alt={filteredImages[selectedImage].alt}
+            fill
+            className="object-contain"
+            sizes="90vw"
+            quality={95}
+          />
+        </motion.div>
 
-            {/* Image counter */}
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white text-lg font-semibold">
-              {selectedImage + 1} / {filteredImages.length}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        {/* Image counter */}
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[60] bg-black/70 backdrop-blur-sm text-white px-6 py-3 rounded-full text-lg font-semibold border border-white/20">
+          {selectedImage + 1} / {filteredImages.length}
+        </div>
+      </motion.div>
+    )}
+  </AnimatePresence>
+
     </section>
   );
 }
