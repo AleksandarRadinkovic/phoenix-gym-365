@@ -45,38 +45,37 @@ export default function ContactFormSection({ dict }: ContactFormSectionProps) {
     return Object.keys(newErrors).length === 0;
   };
 
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  if (!validateForm()) return;
+    if (!validateForm()) return;
 
-  setIsSubmitting(true);
-  setSubmitStatus("idle");
+    setIsSubmitting(true);
+    setSubmitStatus("idle");
 
-  try {
-    const response = await fetch('/api/contact', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(formData),
-    });
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
 
-    if (response.ok) {
-      setSubmitStatus("success");
-      setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
-      setTimeout(() => setSubmitStatus("idle"), 5000);
-    } else {
+      if (response.ok) {
+        setSubmitStatus("success");
+        setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
+        setTimeout(() => setSubmitStatus("idle"), 5000);
+      } else {
+        setSubmitStatus("error");
+      }
+    } catch (error) {
+      console.error('Error:', error);
       setSubmitStatus("error");
+    } finally {
+      setIsSubmitting(false);
     }
-  } catch (error) {
-    console.error('Error:', error);
-    setSubmitStatus("error");
-  } finally {
-    setIsSubmitting(false);
-  }
-};
-
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -96,6 +95,7 @@ const handleSubmit = async (e: React.FormEvent) => {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
             className="text-center mb-12"
+            suppressHydrationWarning
           >
             <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">
               {dict.contact?.formTitle || "Pošaljite Nam Poruku"}
@@ -111,6 +111,7 @@ const handleSubmit = async (e: React.FormEvent) => {
             viewport={{ once: true }}
             transition={{ delay: 0.2, duration: 0.6 }}
             className="bg-gradient-to-br from-gray-900 to-black border border-white/10 rounded-3xl p-8 lg:p-12"
+            suppressHydrationWarning
           >
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid md:grid-cols-2 gap-6">
@@ -258,6 +259,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="p-4 bg-green-500/10 border border-green-500/30 rounded-xl flex items-center gap-3"
+                  suppressHydrationWarning
                 >
                   <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
                   <div className="text-green-500 font-medium">
@@ -271,6 +273,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-center gap-3"
+                  suppressHydrationWarning
                 >
                   <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
                   <div className="text-red-500 font-medium">

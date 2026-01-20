@@ -121,6 +121,7 @@ export default function ContactForm({ dict }: ContactFormProps) {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
+          suppressHydrationWarning
         >
           <div className="inline-block px-4 py-2 bg-[#ff6b35]/10 border border-[#ff6b35]/30 rounded-full mb-6">
             <span className="text-[#ff6b35] font-semibold text-sm uppercase tracking-wider">
@@ -143,6 +144,7 @@ export default function ContactForm({ dict }: ContactFormProps) {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.7 }}
+              suppressHydrationWarning
             >
               <h3 className="text-3xl font-bold text-white mb-4">
                 {dict.contact?.getInTouch || "Stupite u kontakt"}
@@ -167,6 +169,7 @@ export default function ContactForm({ dict }: ContactFormProps) {
                     viewport={{ once: true }}
                     transition={{ delay: index * 0.1, duration: 0.5 }}
                     className="flex items-start gap-4 p-5 bg-gradient-to-br from-gray-900 to-black border border-white/10 rounded-xl hover:border-[#ff6b35]/50 transition-all duration-300 group"
+                    suppressHydrationWarning
                   >
                     <div className="flex-shrink-0 p-3 rounded-lg bg-[#ff6b35]/10 group-hover:bg-[#ff6b35]/20 transition-colors">
                       <Icon className="w-6 h-6 text-[#ff6b35]" />
@@ -187,6 +190,7 @@ export default function ContactForm({ dict }: ContactFormProps) {
               viewport={{ once: true }}
               transition={{ delay: 0.4, duration: 0.7 }}
               className="relative h-80 rounded-2xl overflow-hidden border border-white/10 shadow-2xl"
+              suppressHydrationWarning
             >
               <iframe
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2871.9567890123456!2d17.1907!3d44.7722!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x475e035d7b5e5f65%3A0x123456789!2sTrg%20srpskih%20junaka%201%2C%20Banja%20Luka%2078000!5e0!3m2!1sen!2sba!4v1234567890"
@@ -208,6 +212,7 @@ export default function ContactForm({ dict }: ContactFormProps) {
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
             className="bg-gradient-to-br from-gray-900 to-black border border-white/10 rounded-3xl p-8 lg:p-10"
+            suppressHydrationWarning
           >
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Name Input */}
@@ -331,6 +336,7 @@ export default function ContactForm({ dict }: ContactFormProps) {
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="p-4 bg-green-500/10 border border-green-500/30 rounded-xl flex items-center gap-3"
+                  suppressHydrationWarning
                 >
                   <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
                   <div className="text-green-500 font-medium">
@@ -344,6 +350,7 @@ export default function ContactForm({ dict }: ContactFormProps) {
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-center gap-3"
+                  suppressHydrationWarning
                 >
                   <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
                   <div className="text-red-500 font-medium">

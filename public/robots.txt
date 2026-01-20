@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://phoenixgym365.com/sitemap.xml
