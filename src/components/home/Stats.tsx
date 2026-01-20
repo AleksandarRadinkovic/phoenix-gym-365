@@ -76,7 +76,7 @@ export default function Stats({ dict }: StatsProps) {
     },
     {
       icon: Target,
-      value: 1000,
+      value: 650,
       label: dict.stats.satisfaction || "m² Gym Space",
       color: "from-green-500 to-emerald-500"
     }
