@@ -80,7 +80,7 @@ export default function TeamGrid({ dict, lang }: TeamGridProps) {
     },
     {
       id: 6,
-      name: "Milivoj Vrhovca",
+      name: "Milivoj Vrhovac",
       role: dict.team?.personalTrainer || "Personalni trener",
       images: ["/images/treneri/7.png"],
       socials: {
