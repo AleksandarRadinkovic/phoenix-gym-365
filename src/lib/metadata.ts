@@ -48,7 +48,7 @@ export const metadataConfig: MetadataConfig = {
 }
 
 export function generateMetadata(locale: Locale, page: keyof MetadataConfig['sr']): Metadata {
-  const baseUrl = 'https://phoenixgym365.com'
+  const baseUrl = 'https://www.phoenixgym365.com'
   const config = metadataConfig[locale][page]
   
   return {

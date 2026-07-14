@@ -20,11 +20,11 @@ export async function generateMetadata({ params }: TeamPageProps): Promise<Metad
     openGraph: {
       title: params.lang === 'sr' ? 'Naš Tim | Phoenix Gym 365' : 'Our Team | Phoenix Gym 365',
       description: dict.team.subtitle,
-      url: `https://phoenixgym365.com/${params.lang}/nas-tim`,
+      url: `https://www.phoenixgym365.com/${params.lang}/nas-tim`,
       siteName: 'Phoenix Gym 365',
       images: [
         {
-          url: 'https://phoenixgym365.com/og-image.jpg',
+          url: 'https://www.phoenixgym365.com/og-image.jpg',
           width: 1200,
           height: 630,
           alt: 'Phoenix Gym 365 Team',
@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: TeamPageProps): Promise<Metad
       type: 'website',
     },
     alternates: {
-      canonical: `https://phoenixgym365.com/${params.lang}/nas-tim`,
+      canonical: `https://www.phoenixgym365.com/${params.lang}/nas-tim`,
       languages: {
         'sr': '/sr/nas-tim',
         'en': '/en/nas-tim',

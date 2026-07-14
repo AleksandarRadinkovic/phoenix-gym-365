@@ -10,7 +10,7 @@ const rajdhani = Rajdhani({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://phoenixgym365.com'),
+  metadataBase: new URL('https://www.phoenixgym365.com'),
   
   title: {
     default: 'Phoenix Gym 365',

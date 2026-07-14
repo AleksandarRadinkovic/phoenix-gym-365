@@ -4,8 +4,8 @@ export function GymStructuredData({ lang }: { lang: 'sr' | 'en' }) {
     "@context": "https://schema.org",
     "@type": "GymAndSportsClub",
     "name": "Phoenix Gym 365",
-    "image": "https://phoenixgym365.com/og-image.jpg",
-    "description": lang === 'sr' 
+    "image": "https://www.phoenixgym365.com/og-image.jpg",
+    "description": lang === 'sr'
       ? "Moderna teretana u Banja Luci sa 24/7 pristupom i profesionalnim trenerima"
       : "Modern gym in Banja Luka with 24/7 access and professional trainers",
     "address": {
@@ -14,7 +14,7 @@ export function GymStructuredData({ lang }: { lang: 'sr' | 'en' }) {
       "addressRegion": "Republika Srpska",
       "addressCountry": "BA"
     },
-    "url": "https://phoenixgym365.com",
+    "url": "https://www.phoenixgym365.com",
     "sameAs": [
       "https://www.instagram.com/gym_phoenix_/"
     ],
@@ -54,9 +54,9 @@ export function LocalBusinessStructuredData({ lang }: { lang: 'sr' | 'en' }) {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     "name": "Phoenix Gym 365",
-    "image": "https://phoenixgym365.com/og-image.jpg",
-    "@id": "https://phoenixgym365.com",
-    "url": "https://phoenixgym365.com",
+    "image": "https://www.phoenixgym365.com/og-image.jpg",
+    "@id": "https://www.phoenixgym365.com",
+    "url": "https://www.phoenixgym365.com",
     "address": {
       "@type": "PostalAddress",
       "addressLocality": "Banja Luka",

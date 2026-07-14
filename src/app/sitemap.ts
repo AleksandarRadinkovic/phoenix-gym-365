@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://phoenixgym365.com'
+  const baseUrl = 'https://www.phoenixgym365.com'
   
   const routes = ['', '/nas-tim', '/kontakt']
   const locales = ['sr', 'en']

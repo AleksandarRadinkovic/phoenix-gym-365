@@ -17,14 +17,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       title: dict.metadata.home.title,
       description: dict.metadata.home.description,
-      url: 'https://phoenixgym365.com',
+      url: `https://www.phoenixgym365.com/${params.lang}`,
       siteName: 'Phoenix Gym 365',
       images: ['/images/logo.png'],
       locale: params.lang === 'sr' ? 'sr_RS' : 'en_US',
       type: 'website',
     },
     alternates: {
-      canonical: `https://phoenixgym365.com/${params.lang}`,
+      canonical: `https://www.phoenixgym365.com/${params.lang}`,
       languages: {
         'sr': '/sr',
         'en': '/en',

@@ -23,11 +23,11 @@ export async function generateMetadata({ params }: ContactPageProps): Promise<Me
     openGraph: {
       title: params.lang === 'sr' ? 'Kontakt | Phoenix Gym 365' : 'Contact | Phoenix Gym 365',
       description: dict.contact.heroSubtitle,
-      url: `https://phoenixgym365.com/${params.lang}/kontakt`,
+      url: `https://www.phoenixgym365.com/${params.lang}/kontakt`,
       siteName: 'Phoenix Gym 365',
       images: [
         {
-          url: 'https://phoenixgym365.com/og-image.jpg',
+          url: 'https://www.phoenixgym365.com/og-image.jpg',
           width: 1200,
           height: 630,
           alt: 'Phoenix Gym 365 Contact',
@@ -37,7 +37,7 @@ export async function generateMetadata({ params }: ContactPageProps): Promise<Me
       type: 'website',
     },
     alternates: {
-      canonical: `https://phoenixgym365.com/${params.lang}/kontakt`,
+      canonical: `https://www.phoenixgym365.com/${params.lang}/kontakt`,
       languages: {
         'sr': '/sr/kontakt',
         'en': '/en/kontakt',
