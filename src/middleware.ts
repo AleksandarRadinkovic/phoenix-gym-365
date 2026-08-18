@@ -6,8 +6,17 @@ import { i18n } from '@/i18n/config';
 const CANONICAL_HOST = 'www.phoenixgym365.com';
 const APEX_HOST = 'phoenixgym365.com';
 
+// Matches common bot/scanner probe paths (.php, .env, wp-*, adminer, credentials, ...)
+// so they get a clean 404 instead of falling through to the [lang] dynamic route.
+const SUSPICIOUS_PATH =
+  /\.(php|env|sql|bak|log|git)(\.|$)|wp-(admin|login|content|includes|json)|adminer|phpmyadmin|swagger|credentials?|config\.json|xmlrpc|\.aws|\.ssh/i;
+
 export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
+
+  if (SUSPICIOUS_PATH.test(pathname)) {
+    return new NextResponse('Not Found', { status: 404 });
+  }
 
   if (
     pathname.includes('.') &&

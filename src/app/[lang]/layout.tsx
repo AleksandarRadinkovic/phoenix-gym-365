@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { getDictionary } from '@/lib/dictionary';
+import { i18n } from '@/i18n/config';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 
@@ -7,6 +8,14 @@ type Props = {
   children: React.ReactNode;
   params: { lang: 'sr' | 'en' };
 };
+
+export function generateStaticParams() {
+  return i18n.locales.map((lang) => ({ lang }));
+}
+
+// Any /:lang not in i18n.locales (e.g. bot probes like /wpxml.php) 404s
+// instead of being rendered and crashing in getDictionary().
+export const dynamicParams = false;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const dict = await getDictionary(params.lang);
