@@ -19,15 +19,7 @@ export const metadata: Metadata = {
   },
   
   description: 'Phoenix Gym 365 - moderna teretana u Banja Luci sa 24/7 pristupom',
-  
-  // MAKNI icons ako ih nemaš, ili stavi samo logo
-  icons: {
-    icon: '/images/logo.png', // Ako imaš logo
-  },
-  
-  // MAKNI manifest ako ga nemaš
-  // manifest: '/manifest.json',
-  
+
   robots: {
     index: true,
     follow: true,
