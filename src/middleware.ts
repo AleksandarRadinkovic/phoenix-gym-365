@@ -5,6 +5,8 @@ import { i18n } from '@/i18n/config';
 
 const CANONICAL_HOST = 'www.phoenixgym365.com';
 const APEX_HOST = 'phoenixgym365.com';
+const DASHBOARD_HOST = 'app.phoenixgym365.com';
+const DASHBOARD_AUTH_COOKIE = 'gym_dash_auth';
 
 // Matches common bot/scanner probe paths (.php, .env, wp-*, adminer, credentials, ...)
 // so they get a clean 404 instead of falling through to the [lang] dynamic route.
@@ -26,6 +28,31 @@ export function middleware(request: NextRequest) {
   }
 
   const hostname = (request.headers.get('host') ?? '').split(':')[0].toLowerCase();
+
+  // app.phoenixgym365.com -> internal staff dashboard, completely separate from
+  // the public marketing site. No locale routing here, just a simple password gate.
+  if (hostname === DASHBOARD_HOST) {
+    const expectedPassword = process.env.DASHBOARD_PASSWORD;
+    const isAuthed =
+      !!expectedPassword &&
+      request.cookies.get(DASHBOARD_AUTH_COOKIE)?.value === expectedPassword;
+    const isLoginPath = pathname === '/dashboard/login';
+
+    if (pathname === '/') {
+      const url = new URL(request.url);
+      url.pathname = isAuthed ? '/dashboard' : '/dashboard/login';
+      return NextResponse.rewrite(url);
+    }
+
+    if (!isAuthed && !isLoginPath) {
+      const url = new URL(request.url);
+      url.pathname = '/dashboard/login';
+      return NextResponse.redirect(url);
+    }
+
+    return NextResponse.next();
+  }
+
   const pathnameHasLocale = i18n.locales.some(
     (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
   );
