@@ -109,7 +109,7 @@ export default async function OverviewPage({ searchParams }: { searchParams: Sp 
   const c = cur.rows[0] as { visits: number; people: number };
   const b = before.rows[0] as { visits: number; people: number };
   const ren = Object.fromEntries(renewals.rows.map((x) => [x.kind as string, x as { c: number; days: number }]));
-  const renCount = ren.produzenje?.c ?? 0;
+  const renCount = (ren.produzenje?.c ?? 0) + (ren.uplata?.c ?? 0);
   const newCount = ren.nova?.c ?? 0;
   const mem = members.rows[0] as { total: number; active: number; expiring: number };
   const membersReady = mem.total > 0;
@@ -235,7 +235,7 @@ export default async function OverviewPage({ searchParams }: { searchParams: Sp 
                     <div className="min-w-0 flex-1">
                       <p className="truncate font-semibold text-white">{x.full_name ?? 'Bez imena'}</p>
                       <p className="truncate text-xs text-zinc-400">
-                        {x.kind === 'nova' ? 'Nova članarina' : `bilo do ${fmtDate(x.previous_until)}`} → važi do{' '}
+                        {x.kind === 'nova' ? 'Nova članarina' : x.previous_until ? `bilo do ${fmtDate(x.previous_until)}` : 'Članarina'} → važi do{' '}
                         <span className="text-zinc-200">{fmtDate(x.new_until)}</span>
                       </p>
                     </div>
@@ -243,7 +243,7 @@ export default async function OverviewPage({ searchParams }: { searchParams: Sp 
                       {added !== null && added > 0 && (
                         <p className="font-[family-name:var(--font-rajdhani)] text-lg font-bold text-emerald-400">+{added} d</p>
                       )}
-                      <p className="text-[11px] text-zinc-500">{fmtDateTime(x.renewed_at)}</p>
+                      <p className="text-[11px] text-zinc-500">{x.kind === 'uplata' ? `od ${fmtDate(x.renewed_at)}` : fmtDateTime(x.renewed_at)}</p>
                     </div>
                   </li>
                 );
