@@ -86,7 +86,7 @@ export default async function EntriesPage({ searchParams }: { searchParams: Sp }
 
       <section className="grid grid-cols-3 gap-3">
         <Kpi accent label="Dolasci" value={rows.length} hint="Član jednom po danu" icon={<DoorOpen className="h-4 w-4" />} />
-        <Kpi label="Istekla" value={expiredIn} hint="Ušli sa isteklom karticom" icon={<AlertTriangle className="h-4 w-4" />} />
+        <Kpi label="Istekla" value={expiredIn} hint="Provučena istekla kartica" icon={<AlertTriangle className="h-4 w-4" />} />
         <Kpi label="Nepoznate" value={unknown} hint="Kartica bez osobe" icon={<HelpCircle className="h-4 w-4" />} />
       </section>
 
@@ -122,11 +122,11 @@ export default async function EntriesPage({ searchParams }: { searchParams: Sp }
                           {x.swipes > 1 ? ` · ${x.swipes}× provučena, zadnje ${fmtTime(x.last_swipe)}` : ''}
                         </p>
                         <div className="mt-1.5 sm:hidden">
-                          {expired ? <Badge tone="red">ušao sa isteklom karticom</Badge> : <ValidityBadge until={x.valid_until} />}
+                          {expired ? <Badge tone="red">kartica istekla {fmtDate(x.valid_until)}</Badge> : <ValidityBadge until={x.valid_until} />}
                         </div>
                       </div>
                       <div className="hidden sm:block">
-                        {expired ? <Badge tone="red">ušao sa isteklom karticom</Badge> : <ValidityBadge until={x.valid_until} />}
+                        {expired ? <Badge tone="red">kartica istekla {fmtDate(x.valid_until)}</Badge> : <ValidityBadge until={x.valid_until} />}
                       </div>
                     </li>
                   );

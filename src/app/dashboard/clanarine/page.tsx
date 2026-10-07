@@ -17,7 +17,7 @@ type Row = {
   id: number;
   dss_person_id: string;
   full_name: string | null;
-  kind: 'produzenje' | 'nova';
+  kind: 'produzenje' | 'nova' | 'uplata';
   previous_until: string | null;
   new_until: string | null;
   renewed_at: string;
@@ -45,7 +45,7 @@ export default async function RenewalsPage({ searchParams }: { searchParams: Sp 
 
   const rows = list.rows as Row[];
   const membersReady = (ready.rows[0] as { n: number }).n > 0;
-  const renewals = rows.filter((x) => x.kind === 'produzenje');
+  const renewals = rows.filter((x) => x.kind !== 'nova');
   const fresh = rows.filter((x) => x.kind === 'nova');
   const addedDays = rows.reduce((s, x) => s + Math.max(0, dayDiff(x.previous_until ?? x.renewed_at, x.new_until) ?? 0), 0);
 
@@ -70,7 +70,7 @@ export default async function RenewalsPage({ searchParams }: { searchParams: Sp 
       )}
 
       <section className="grid grid-cols-3 gap-3">
-        <Kpi accent label="Produženja" value={renewals.length} hint="Postojeći članovi" icon={<CreditCard className="h-4 w-4" />} />
+        <Kpi accent label="Produženja" value={renewals.length} hint="Plaćene članarine" icon={<CreditCard className="h-4 w-4" />} />
         <Kpi label="Nove" value={fresh.length} hint="Novi članovi" icon={<UserPlus className="h-4 w-4" />} />
         <Kpi label="Dani" value={addedDays} hint="Ukupno dodatih dana" icon={<CalendarPlus className="h-4 w-4" />} />
       </section>
@@ -99,7 +99,7 @@ export default async function RenewalsPage({ searchParams }: { searchParams: Sp 
                         <div className="min-w-0">
                           <div className="flex flex-wrap items-center gap-2">
                             <p className="truncate font-semibold text-white">{x.full_name ?? 'Bez imena'}</p>
-                            {x.kind === 'nova' ? <Badge tone="blue">Nova</Badge> : <Badge tone="orange">Produženje</Badge>}
+                            {x.kind === 'nova' ? <Badge tone="blue">Nova</Badge> : x.kind === 'uplata' ? <Badge tone="zinc">Članarina</Badge> : <Badge tone="orange">Produženje</Badge>}
                           </div>
                           {x.cards && <p className="truncate text-xs text-zinc-500">Kartica {x.cards}</p>}
                         </div>
@@ -118,7 +118,9 @@ export default async function RenewalsPage({ searchParams }: { searchParams: Sp 
                             )}
                             <span className="font-semibold text-white">{fmtDate(x.new_until)}</span>
                           </p>
-                          <p className="text-[11px] text-zinc-500">evidentirano u {fmtTime(x.renewed_at)}</p>
+                          <p className="text-[11px] text-zinc-500">
+                            {x.kind === 'uplata' ? `počinje ${fmtDate(x.renewed_at)}` : `evidentirano u ${fmtTime(x.renewed_at)}`}
+                          </p>
                         </div>
                         <div className="min-w-[64px] text-right">
                           {added !== null && added > 0 && (
@@ -144,8 +146,9 @@ export default async function RenewalsPage({ searchParams }: { searchParams: Sp 
       </div>
 
       <p className="mt-6 text-xs leading-relaxed text-zinc-500">
-        Produženje se bilježi kada se u DSS-u osobi pomjeri datum važenja kartice unaprijed. Vrijeme je ono kada je
-        promjena stigla u panel (najviše nekoliko minuta nakon unosa).
+        Produženje se bilježi kada se u DSS-u osobi pomjeri datum važenja kartice unaprijed (vrijeme unosa u DSS-u,
+        u panelu najviše nekoliko minuta kasnije). Stavke označene „Članarina“ su uplate od prije povezivanja panela
+        (7.10.2026.) — pročitane iz DSS-a prema danu početka članarine.
       </p>
     </Shell>
   );
