@@ -80,7 +80,9 @@ export function Shell({
         {children}
       </main>
 
-      <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-white/[0.08] bg-[#0c0c0f]/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl md:hidden">
+      {/* Puna (ne prozirna) pozadina i vlastiti sloj: iOS Safari inače pomjera meni dok se skrola
+          i skriva/prikazuje traka preglednika. Sjena ispod popunjava prostor da se sadržaj ne vidi ispod menija. */}
+      <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-white/[0.08] bg-[#0c0c0f] pb-[env(safe-area-inset-bottom)] shadow-[0_120px_0_0_#0c0c0f] [transform:translateZ(0)] md:hidden">
         <div className="grid grid-cols-4">
           {TABS.map(({ key, label, href, Icon }) => (
             <a
