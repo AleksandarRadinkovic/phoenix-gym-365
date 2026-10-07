@@ -1,195 +1,294 @@
-// src/app/dashboard/page.tsx
+// src/app/dashboard/page.tsx — Pregled
 import { sql } from '@vercel/postgres';
-import Link from 'next/link';
+import { Activity, AlertTriangle, CreditCard, Flame, ShieldCheck, Users } from 'lucide-react';
+import { RangeBar, Shell } from '@/components/dashboard/Shell';
+import { Avatar, Badge, Bars, Card, Empty, Kpi, Notice, SectionTitle, ValidityBadge, pct } from '@/components/dashboard/ui';
+import { drainQuietly } from '@/lib/gym/sync';
+import {
+  agoLabel,
+  dayDiff,
+  fmtDate,
+  fmtDateTime,
+  parseRange,
+  previousRange,
+  rangeQuery,
+  shortDay,
+  todayLocal,
+} from '@/lib/gym/time';
 
 export const dynamic = 'force-dynamic';
 
-type EntryRow = {
-  dss_record_id: number;
-  card_number: string | null;
-  event_time: string | null;
-  door_name: string | null;
-  direction: number | null;
-  person_name: string | null;
-  person_code: string | null;
-};
+type Sp = { [k: string]: string | string[] | undefined };
 
-type Period = 'day' | 'week' | 'month';
+export default async function OverviewPage({ searchParams }: { searchParams: Sp }) {
+  await drainQuietly();
 
-const PERIOD_LABEL: Record<Period, string> = {
-  day: 'Danas',
-  week: 'Sedmica',
-  month: 'Mjesec',
-};
+  const r = parseRange(searchParams);
+  const prev = previousRange(r);
+  const isToday = r.from === r.to && r.to === todayLocal();
 
-const PERIOD_INTERVAL: Record<Period, string> = {
-  day: '24 hours',
-  week: '7 days',
-  month: '30 days',
-};
-
-const PERIOD_DAYS: Record<Period, number> = {
-  day: 1,
-  week: 7,
-  month: 30,
-};
-
-function parsePeriod(value: string | string[] | undefined): Period {
-  const v = Array.isArray(value) ? value[0] : value;
-  if (v === 'week' || v === 'month') return v;
-  return 'day';
-}
-
-function directionBadge(direction: number | null) {
-  if (direction === 0) {
-    return (
-      <span className="inline-flex items-center rounded-full bg-green-100 text-green-700 text-xs font-semibold px-2 py-0.5">
-        Ulaz
-      </span>
-    );
-  }
-  if (direction === 1) {
-    return (
-      <span className="inline-flex items-center rounded-full bg-gray-200 text-gray-600 text-xs font-semibold px-2 py-0.5">
-        Izlaz
-      </span>
-    );
-  }
-  return <span className="text-xs text-gray-400">—</span>;
-}
-
-function formatTime(value: string | null, period: Period) {
-  if (!value) return '—';
-  const date = new Date(value);
-  if (period === 'day') {
-    return date.toLocaleString('sr-Latn-BA', { hour: '2-digit', minute: '2-digit' });
-  }
-  return date.toLocaleString('sr-Latn-BA', {
-    day: '2-digit',
-    month: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-}
-
-export default async function DashboardPage({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
-}) {
-  const period = parsePeriod(searchParams?.period);
-  const interval = PERIOD_INTERVAL[period];
-
-  const [entriesResult, countResult, uniqueResult] = await Promise.all([
-    sql<EntryRow>`
-      SELECT dss_record_id, card_number, event_time, door_name, direction, person_name, person_code
-      FROM gym_entries
-      WHERE event_time >= NOW() - ${interval}::interval
-      ORDER BY event_time DESC
-      LIMIT 300
-    `,
-    sql`SELECT COUNT(*)::int AS count FROM gym_entries WHERE event_time >= NOW() - ${interval}::interval`,
-    sql`SELECT COUNT(DISTINCT card_number)::int AS count FROM gym_entries WHERE event_time >= NOW() - ${interval}::interval AND direction = 0`,
+  const [cur, before, daily, hourly, renewals, members, expiring, latestRenewals] = await Promise.all([
+    sql`
+      SELECT count(*)::int AS visits, count(DISTINCT card_number)::int AS people
+      FROM (
+        SELECT DISTINCT card_number, (event_time AT TIME ZONE 'Europe/Sarajevo')::date AS d
+        FROM gym_entries
+        WHERE card_number IS NOT NULL AND card_number <> ''
+          AND event_time >= ${r.from}::date::timestamp AT TIME ZONE 'Europe/Sarajevo'
+          AND event_time < (${r.to}::date + 1)::timestamp AT TIME ZONE 'Europe/Sarajevo'
+      ) s`,
+    // Prethodni period iste dužine; ako period uključuje danas, poredi do istog doba dana.
+    sql`
+      SELECT count(*)::int AS visits, count(DISTINCT card_number)::int AS people
+      FROM (
+        SELECT DISTINCT card_number, (event_time AT TIME ZONE 'Europe/Sarajevo')::date AS d
+        FROM gym_entries
+        WHERE card_number IS NOT NULL AND card_number <> ''
+          AND event_time >= ${prev.from}::date::timestamp AT TIME ZONE 'Europe/Sarajevo'
+          AND event_time < LEAST(
+            (${prev.to}::date + 1)::timestamp AT TIME ZONE 'Europe/Sarajevo',
+            now() - make_interval(days => ${r.days}::int)
+          )
+      ) s`,
+    sql`
+      SELECT to_char(g.d, 'YYYY-MM-DD') AS day, COALESCE(v.visits, 0)::int AS visits
+      FROM generate_series(${r.from}::date, ${r.to}::date, interval '1 day') AS g(d)
+      LEFT JOIN (
+        SELECT (event_time AT TIME ZONE 'Europe/Sarajevo')::date AS d, count(DISTINCT card_number) AS visits
+        FROM gym_entries
+        WHERE card_number IS NOT NULL AND card_number <> ''
+          AND event_time >= ${r.from}::date::timestamp AT TIME ZONE 'Europe/Sarajevo'
+          AND event_time < (${r.to}::date + 1)::timestamp AT TIME ZONE 'Europe/Sarajevo'
+        GROUP BY 1
+      ) v ON v.d = g.d::date
+      ORDER BY 1`,
+    // Sat prvog dolaska svakog člana u danu -> kad je gužva
+    sql`
+      SELECT h::int AS hour, count(*)::int AS c FROM (
+        SELECT card_number, (event_time AT TIME ZONE 'Europe/Sarajevo')::date AS d,
+               extract(hour FROM min(event_time AT TIME ZONE 'Europe/Sarajevo')) AS h
+        FROM gym_entries
+        WHERE card_number IS NOT NULL AND card_number <> ''
+          AND event_time >= ${r.from}::date::timestamp AT TIME ZONE 'Europe/Sarajevo'
+          AND event_time < (${r.to}::date + 1)::timestamp AT TIME ZONE 'Europe/Sarajevo'
+        GROUP BY 1, 2
+      ) s GROUP BY 1 ORDER BY 1`,
+    sql`
+      SELECT kind, count(*)::int AS c,
+             COALESCE(sum(GREATEST(0, extract(epoch FROM new_until - COALESCE(previous_until, renewed_at)) / 86400)), 0)::int AS days
+      FROM gym_renewals
+      WHERE renewed_at >= ${r.from}::date::timestamp AT TIME ZONE 'Europe/Sarajevo'
+        AND renewed_at < (${r.to}::date + 1)::timestamp AT TIME ZONE 'Europe/Sarajevo'
+      GROUP BY kind`,
+    sql`
+      SELECT count(*)::int AS total,
+             count(*) FILTER (WHERE valid_until >= now())::int AS active,
+             count(*) FILTER (WHERE valid_until >= now() AND valid_until < now() + interval '7 days')::int AS expiring
+      FROM gym_members WHERE NOT deleted`,
+    sql`
+      SELECT m.dss_person_id, m.full_name, m.valid_until,
+             (SELECT max(e.event_time) FROM gym_entries e
+                JOIN gym_member_cards c ON c.card_number = e.card_number
+               WHERE c.dss_person_id = m.dss_person_id) AS last_visit
+      FROM gym_members m
+      WHERE NOT m.deleted AND m.valid_until >= now() AND m.valid_until < now() + interval '7 days'
+      ORDER BY m.valid_until ASC
+      LIMIT 8`,
+    sql`
+      SELECT id, full_name, kind, previous_until, new_until, renewed_at
+      FROM gym_renewals
+      WHERE renewed_at >= ${r.from}::date::timestamp AT TIME ZONE 'Europe/Sarajevo'
+        AND renewed_at < (${r.to}::date + 1)::timestamp AT TIME ZONE 'Europe/Sarajevo'
+      ORDER BY renewed_at DESC
+      LIMIT 6`,
   ]);
 
-  const entries = entriesResult.rows;
-  const totalCount = (countResult.rows[0] as { count: number } | undefined)?.count ?? 0;
-  const uniqueMembers = (uniqueResult.rows[0] as { count: number } | undefined)?.count ?? 0;
-  const days = PERIOD_DAYS[period];
-  const avgPerDay = days > 1 ? Math.round((totalCount / days) * 10) / 10 : totalCount;
+  const c = cur.rows[0] as { visits: number; people: number };
+  const b = before.rows[0] as { visits: number; people: number };
+  const ren = Object.fromEntries(renewals.rows.map((x) => [x.kind as string, x as { c: number; days: number }]));
+  const renCount = ren.produzenje?.c ?? 0;
+  const newCount = ren.nova?.c ?? 0;
+  const mem = members.rows[0] as { total: number; active: number; expiring: number };
+  const membersReady = mem.total > 0;
+  const q = rangeQuery(r);
+  const deltaLabel = isToday ? 'vs juče do ovog sata' : r.days === 1 ? 'vs dan prije' : `vs prethodnih ${r.days} dana`;
+
+  const dailyData = (daily.rows as { day: string; visits: number }[]).map((d, i, arr) => ({
+    label: shortDay(d.day),
+    value: d.visits,
+    highlight: i === arr.length - 1,
+  }));
+
+  const hourMap = new Map((hourly.rows as { hour: number; c: number }[]).map((h) => [h.hour, h.c]));
+  const hours = Array.from({ length: 24 }, (_, h) => h).filter((h) => h >= 5 || (hourMap.get(h) ?? 0) > 0);
+  const perDay = (n: number) => (r.days > 1 ? Math.round((n / r.days) * 10) / 10 : n);
+  const hourlyRaw = hours.map((h) => ({ label: String(h), value: perDay(hourMap.get(h) ?? 0), title: `${h}–${h + 1}h` }));
+  const peak = hourlyRaw.reduce((a, x) => (x.value > a.value ? x : a), { label: '-', value: 0, title: '' });
+  const hourlyData = hourlyRaw.map((x) => ({ ...x, highlight: peak.value > 0 && x.label === peak.label }));
 
   return (
-    <main className="min-h-screen bg-[var(--phoenix-light)] pb-10">
-      <header className="sticky top-0 z-10 bg-[var(--phoenix-dark)] text-white px-4 py-3 flex items-center justify-between shadow-md">
-        <div>
-          <h1 className="text-lg font-bold leading-tight">Phoenix Gym 365</h1>
-          <p className="text-xs text-gray-300">Interni panel — ulasci</p>
-        </div>
-        <a
-          href="/api/dashboard-logout"
-          className="text-xs text-gray-300 hover:text-white underline whitespace-nowrap"
-        >
-          Odjava
-        </a>
-      </header>
+    <Shell active="pregled" title="Pregled" subtitle="Dolasci, članarine i gužva u teretani">
+      <RangeBar range={r} basePath="/dashboard" />
 
-      <nav className="px-3 pt-3">
-        <div className="grid grid-cols-3 gap-1.5 bg-white rounded-xl shadow p-1">
-          {(['day', 'week', 'month'] as Period[]).map((p) => {
-            const active = p === period;
-            return (
-              <Link
-                key={p}
-                href={`/dashboard?period=${p}`}
-                className={`text-center text-sm font-semibold rounded-lg py-2 transition ${
-                  active
-                    ? 'bg-[var(--phoenix-orange)] text-white'
-                    : 'text-gray-500 hover:bg-gray-100'
-                }`}
-              >
-                {PERIOD_LABEL[p]}
-              </Link>
-            );
-          })}
+      {!membersReady && (
+        <div className="mb-5">
+          <Notice>
+            Podaci o članarinama (važenje kartica i produženja) još nisu stigli sa DSS računara. Pojaviće se ovdje
+            čim se tamo ažurira skripta za sinhronizaciju.
+          </Notice>
         </div>
-      </nav>
+      )}
 
-      <section className="px-3 pt-3 grid grid-cols-3 gap-2">
-        <StatCard label="Ulasci" value={totalCount} />
-        <StatCard label="Članovi" value={uniqueMembers} />
-        <StatCard
-          label={period === 'day' ? 'Trenutno' : 'Prosjek/dan'}
-          value={avgPerDay}
+      <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <Kpi
+          accent
+          label="Dolasci"
+          value={c.visits}
+          hint={isToday ? 'Članova koji su danas ušli (svako se broji jednom po danu)' : 'Svaki član se broji jednom po danu'}
+          delta={pct(c.visits, b.visits)}
+          deltaLabel={deltaLabel}
+          icon={<Activity className="h-4 w-4" />}
+          href={`/dashboard/ulasci?${q}`}
+        />
+        {r.days > 1 ? (
+          <Kpi
+            label="Različitih članova"
+            value={c.people}
+            hint="Koliko različitih osoba je treniralo u periodu"
+            delta={pct(c.people, b.people)}
+            deltaLabel={deltaLabel}
+            icon={<Users className="h-4 w-4" />}
+          />
+        ) : (
+          <Kpi
+            label="Ističe uskoro"
+            value={membersReady ? mem.expiring : '—'}
+            hint={membersReady ? 'Članarine koje ističu u narednih 7 dana' : 'Čeka podatke sa DSS-a'}
+            icon={<Users className="h-4 w-4" />}
+            href="/dashboard/clanovi?s=istice"
+          />
+        )}
+        <Kpi
+          label="Produženja"
+          value={membersReady ? renCount : '—'}
+          hint={membersReady ? `Produžene članarine u periodu${newCount ? ` · +${newCount} ${newCount === 1 ? 'nova' : 'novih'}` : ''}` : 'Čeka podatke sa DSS-a'}
+          icon={<CreditCard className="h-4 w-4" />}
+          href={`/dashboard/clanarine?${q}`}
+        />
+        <Kpi
+          label="Aktivne članarine"
+          value={membersReady ? mem.active : '—'}
+          hint={membersReady ? `Važe danas · ${mem.expiring} ističe u narednih 7 dana` : 'Čeka podatke sa DSS-a'}
+          icon={<ShieldCheck className="h-4 w-4" />}
+          href="/dashboard/clanovi?s=aktivni"
         />
       </section>
 
-      <section className="px-3 pt-4">
-        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2 px-1">
-          Ko je ušao — {PERIOD_LABEL[period].toLowerCase()}
-        </h2>
-        <div className="bg-white rounded-xl shadow divide-y divide-gray-100">
-          {entries.map((entry) => (
-            <div
-              key={entry.dss_record_id}
-              className="flex items-center justify-between gap-3 px-4 py-3"
-            >
-              <div className="min-w-0 flex-1">
-                <p className="font-medium text-[var(--phoenix-dark)] truncate">
-                  {entry.person_name ?? (
-                    <span className="text-gray-400">Nepoznata kartica</span>
-                  )}
-                </p>
-                <p className="text-xs text-gray-400 truncate">
-                  {entry.door_name ?? '—'}
-                  {entry.card_number ? ` · ${entry.card_number}` : ''}
-                </p>
-              </div>
-              <div className="flex flex-col items-end gap-1 shrink-0">
-                {directionBadge(entry.direction)}
-                <span className="text-xs text-gray-400 whitespace-nowrap">
-                  {formatTime(entry.event_time, period)}
-                </span>
-              </div>
-            </div>
-          ))}
-          {entries.length === 0 && (
-            <div className="px-4 py-8 text-center text-gray-400 text-sm">
-              Nema zapisa za odabrani period.
-            </div>
-          )}
-        </div>
+      <section className="mt-5 grid gap-3 lg:grid-cols-5">
+        {r.days > 1 && (
+          <Card className="p-4 sm:p-5 lg:col-span-3">
+            <SectionTitle title="Dolasci po danu" hint="Broj članova koji su ušli svaki dan" />
+            <Bars data={dailyData} height={160} labelEvery={r.days > 20 ? 5 : r.days > 10 ? 2 : 1} />
+          </Card>
+        )}
+        <Card className={r.days > 1 ? 'p-4 sm:p-5 lg:col-span-2' : 'p-4 sm:p-5 lg:col-span-5'}>
+          <SectionTitle
+            title="Gužva po satu"
+            hint={r.days > 1 ? 'Prosječan broj dolazaka po satu (po danu)' : 'Kada su članovi dolazili'}
+            action={
+              peak.value > 0 ? (
+                <Badge tone="orange">
+                  <Flame className="h-3 w-3" /> najviše {peak.label}–{Number(peak.label) + 1}h
+                </Badge>
+              ) : undefined
+            }
+          />
+          <Bars data={hourlyData} height={160} labelEvery={2} />
+        </Card>
       </section>
-    </main>
-  );
-}
 
-function StatCard({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="bg-white rounded-xl shadow px-2 py-3 flex flex-col items-center text-center">
-      <p className="text-[11px] text-gray-500 leading-tight">{label}</p>
-      <p className="text-xl sm:text-2xl font-bold text-[var(--phoenix-dark)] leading-tight">
-        {value}
-      </p>
-    </div>
+      <section className="mt-5 grid gap-3 lg:grid-cols-2">
+        <Card>
+          <div className="p-4 pb-0 sm:p-5 sm:pb-0">
+            <SectionTitle
+              title="Produžili članarinu"
+              hint={r.label}
+              action={
+                <a href={`/dashboard/clanarine?${q}`} className="text-xs font-semibold text-[#ff6b35] hover:underline">
+                  Sve →
+                </a>
+              }
+            />
+          </div>
+          {latestRenewals.rows.length === 0 ? (
+            <Empty>{membersReady ? 'Nema produženja u ovom periodu.' : 'Čeka podatke sa DSS-a.'}</Empty>
+          ) : (
+            <ul className="divide-y divide-white/[0.05]">
+              {latestRenewals.rows.map((x) => {
+                const added = dayDiff(x.previous_until ?? x.renewed_at, x.new_until);
+                return (
+                  <li key={x.id} className="flex items-center gap-3 px-4 py-3 sm:px-5">
+                    <Avatar name={x.full_name} />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate font-semibold text-white">{x.full_name ?? 'Bez imena'}</p>
+                      <p className="truncate text-xs text-zinc-400">
+                        {x.kind === 'nova' ? 'Nova članarina' : `bilo do ${fmtDate(x.previous_until)}`} → važi do{' '}
+                        <span className="text-zinc-200">{fmtDate(x.new_until)}</span>
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      {added !== null && added > 0 && (
+                        <p className="font-[family-name:var(--font-rajdhani)] text-lg font-bold text-emerald-400">+{added} d</p>
+                      )}
+                      <p className="text-[11px] text-zinc-500">{fmtDateTime(x.renewed_at)}</p>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </Card>
+
+        <Card>
+          <div className="p-4 pb-0 sm:p-5 sm:pb-0">
+            <SectionTitle
+              title="Ističe uskoro"
+              hint="Članarine koje ističu u narednih 7 dana"
+              action={
+                <a href="/dashboard/clanovi?s=istice" className="text-xs font-semibold text-[#ff6b35] hover:underline">
+                  Svi →
+                </a>
+              }
+            />
+          </div>
+          {expiring.rows.length === 0 ? (
+            <Empty>{membersReady ? 'Niko ne ističe u narednih 7 dana.' : 'Čeka podatke sa DSS-a.'}</Empty>
+          ) : (
+            <ul className="divide-y divide-white/[0.05]">
+              {expiring.rows.map((m) => {
+                return (
+                  <li key={m.dss_person_id} className="flex items-center gap-3 px-4 py-3 sm:px-5">
+                    <Avatar name={m.full_name} />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate font-semibold text-white">{m.full_name ?? 'Bez imena'}</p>
+                      <p className="truncate text-xs text-zinc-500">
+                        {m.last_visit ? `zadnji dolazak: ${agoLabel(m.last_visit)}` : 'nema dolazaka'}
+                      </p>
+                    </div>
+                    <ValidityBadge until={m.valid_until} />
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </Card>
+      </section>
+
+      {!membersReady && (
+        <p className="mt-6 flex items-center gap-2 text-xs text-zinc-500">
+          <AlertTriangle className="h-3.5 w-3.5" /> Imena i važenje kartica se popunjavaju nakon sinhronizacije osoba sa DSS-a.
+        </p>
+      )}
+    </Shell>
   );
 }
