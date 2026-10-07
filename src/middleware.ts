@@ -31,7 +31,9 @@ export function middleware(request: NextRequest) {
 
   // app.phoenixgym365.com -> internal staff dashboard, completely separate from
   // the public marketing site. No locale routing here, just a simple password gate.
-  if (hostname === DASHBOARD_HOST) {
+  // /dashboard/* is also gated the same way on any other host (e.g. preview deployments).
+  const isDashboardPath = pathname === '/dashboard' || pathname.startsWith('/dashboard/');
+  if (hostname === DASHBOARD_HOST || isDashboardPath) {
     const expectedPassword = process.env.DASHBOARD_PASSWORD;
     const isAuthed =
       !!expectedPassword &&
