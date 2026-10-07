@@ -80,7 +80,9 @@ export function Shell({
         {children}
       </main>
 
-      <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-white/[0.08] bg-[#0c0c0f]/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl md:hidden">
+      {/* Puna (ne prozirna) pozadina i vlastiti sloj: iOS Safari inače pomjera meni dok se skrola
+          i skriva/prikazuje traka preglednika. Sjena ispod popunjava prostor da se sadržaj ne vidi ispod menija. */}
+      <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-white/[0.08] bg-[#0c0c0f] pb-[env(safe-area-inset-bottom)] shadow-[0_120px_0_0_#0c0c0f] [transform:translateZ(0)] md:hidden">
         <div className="grid grid-cols-4">
           {TABS.map(({ key, label, href, Icon }) => (
             <a
@@ -120,7 +122,9 @@ export function RangeBar({
 
   return (
     <div className="mb-5 space-y-3">
-      <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none]">
+      {/* Brzi izbori se skrolaju; "Od – do" je van skrol-trake da mu se padajući prozor ne odsiječe. */}
+      <div className="flex items-start gap-2">
+      <div className="-ml-4 flex min-w-0 flex-1 gap-2 overflow-x-auto pb-1 pl-4 [scrollbar-width:none]">
         {PRESETS.map((p) => (
           <a
             key={p.key}
@@ -135,7 +139,8 @@ export function RangeBar({
             {p.label}
           </a>
         ))}
-        <details className="group relative">
+      </div>
+        <details className="group relative shrink-0">
           <summary
             className={cx(
               'flex cursor-pointer list-none items-center gap-2 whitespace-nowrap rounded-full border px-4 py-2 text-sm font-semibold transition',
@@ -150,7 +155,7 @@ export function RangeBar({
           <form
             action={basePath}
             method="get"
-            className="fixed inset-x-4 top-40 z-40 rounded-2xl border border-white/10 bg-[#141417] p-4 shadow-2xl sm:absolute sm:inset-x-auto sm:left-0 sm:top-12 sm:w-80"
+            className="fixed inset-x-4 top-40 z-40 rounded-2xl border border-white/10 bg-[#141417] p-4 shadow-2xl sm:absolute sm:inset-x-auto sm:right-0 sm:top-12 sm:w-80"
           >
             {Object.entries(keep).map(([k, v]) => (v ? <input key={k} type="hidden" name={k} value={v} /> : null))}
             <div className="grid grid-cols-2 gap-3">

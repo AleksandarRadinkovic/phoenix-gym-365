@@ -7,6 +7,9 @@ import { drainQuietly } from '@/lib/gym/sync';
 import { fmtDate, fmtTime, parseRange } from '@/lib/gym/time';
 
 export const dynamic = 'force-dynamic';
+// Bez Next.js keša za SQL upite (inače panel prikazuje stare brojke).
+export const fetchCache = 'force-no-store';
+export const revalidate = 0;
 
 type Sp = { [k: string]: string | string[] | undefined };
 

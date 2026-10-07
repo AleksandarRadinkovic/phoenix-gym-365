@@ -8,6 +8,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { drainQueues } from '@/lib/gym/sync';
 
 export const dynamic = 'force-dynamic';
+// Bez Next.js keša za SQL upite (inače panel prikazuje stare brojke).
+export const fetchCache = 'force-no-store';
+export const revalidate = 0;
 export const maxDuration = 60;
 
 export async function GET(req: NextRequest) {
