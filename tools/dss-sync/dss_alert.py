@@ -10,8 +10,8 @@ ga radnica ne zatvori. Opciono i narandžasto upozorenje kad uđe osoba kojoj je
 
 Pravila:
   - "Danas" = kalendarski dan po vremenu DSS računara.
-  - Dva provlačenja u razmaku manjem od ALERT_DEBOUNCE_SECONDS (default 120 s)
-    se računaju kao jedan ulazak (npr. vrata se nisu odmah otvorila).
+  - Sva provlačenja u roku od ALERT_DEBOUNCE_SECONDS (default 120 s) od početka
+    ulaska se računaju kao jedan ulazak (npr. vrata se nisu odmah otvorila).
   - Ako je poznata kolona sa rezultatom otvaranja (DSS_ALERT_OK_COL), broje se
     samo propušteni ulasci; odbijeni se ne broje kao ulazak.
 
@@ -24,7 +24,7 @@ Env varijable: iste DSS_DB_* kao dss_sync.py (DSS_DB_PASSWORD je obavezna), plus
     ALERT_POLL_SECONDS       (default 2)
     ALERT_DEBOUNCE_SECONDS   (default 120)
     ALERT_EXPIRED            1 = upozori i na isteklu članarinu (default 1)
-    DSS_ALERT_OK_COL         kolona rezultata (npr. OPEN_RESULT); prazno = broje se sva provlačenja
+    DSS_ALERT_OK_COL         kolona rezultata (default OPEN_TYPE_LEVEL: 1 = propušten, 2 = odbijen)
     DSS_ALERT_OK_VALUES      vrijednosti koje znače "propušten" (default "1")
 """
 
@@ -74,7 +74,7 @@ CARD_PERSON_COL = env("DSS_CARD_PERSON_COL", "PERSON_ID")
 POLL = float(env("ALERT_POLL_SECONDS", "2"))
 DEBOUNCE = float(env("ALERT_DEBOUNCE_SECONDS", "120"))
 ALERT_EXPIRED = env("ALERT_EXPIRED", "1") == "1"
-OK_COL = env("DSS_ALERT_OK_COL", "").strip()
+OK_COL = env("DSS_ALERT_OK_COL", "OPEN_TYPE_LEVEL").strip()  # 1 = propušten, 2 = odbijen
 OK_VALUES = {v.strip() for v in env("DSS_ALERT_OK_VALUES", "1").split(",") if v.strip()}
 
 HERE = Path(__file__).parent
@@ -116,14 +116,14 @@ def to_dt(v):
         return None
 
 
-def visits(times):
-    """Broj ulazaka: provlačenja bliža od DEBOUNCE sekundi se broje kao jedan."""
-    n, last = 0, None
+def visit_starts(times):
+    """Počeci ulazaka: sva provlačenja u roku od DEBOUNCE sekundi od POČETKA ulaska su isti ulazak
+    (npr. 3 provlačenja za redom dok se vrata ne otvore). Lanac brzih provlačenja ne produžava ulazak."""
+    starts = []
     for t in sorted(times):
-        if last is None or (t - last).total_seconds() >= DEBOUNCE:
-            n += 1
-        last = t
-    return n
+        if not starts or (t - starts[-1]).total_seconds() >= DEBOUNCE:
+            starts.append(t)
+    return starts
 
 
 # ---------------------------------------------------------------------------
@@ -266,26 +266,26 @@ class Watcher:
     def remember(self, r, t, alert=True):
         key, pid = self.person_key_for(r["card"])
         times = self.seen.setdefault(key, [])
-        earlier = [x for x in times if (t - x).total_seconds() >= DEBOUNCE]
-        duplicate_swipe = any(0 <= (t - x).total_seconds() < DEBOUNCE for x in times)
+        before = len(visit_starts(times))
         times.append(t)
-        if not alert:
+        starts = visit_starts(times)
+        new_visit = len(starts) > before
+        if not alert or not new_visit:
             return
         info = self.person_info.get(pid or "", {})
         name = info.get("name") or f"Kartica {r['card']}"
-        if earlier and not duplicate_swipe:
-            n = visits(times)
+        if len(starts) >= 2:
             self.out.put({
                 "kind": "repeat",
                 "name": name,
                 "card": r["card"],
-                "first": min(earlier).strftime("%H:%M"),
+                "first": starts[0].strftime("%H:%M"),
                 "now": t.strftime("%H:%M"),
-                "count": n,
+                "count": len(starts),
             })
-            log.info("UPOZORENJE drugi ulazak: %s (kartica %s) prvi %s, sada %s",
-                     name, r["card"], min(earlier).strftime("%H:%M"), t.strftime("%H:%M"))
-        elif not earlier and not duplicate_swipe and ALERT_EXPIRED:
+            log.info("UPOZORENJE %d. ulazak: %s (kartica %s) prvi %s, sada %s",
+                     len(starts), name, r["card"], starts[0].strftime("%H:%M"), t.strftime("%H:%M"))
+        elif ALERT_EXPIRED:
             exp = info.get("expire")
             if exp and exp < t:
                 self.out.put({
@@ -404,8 +404,8 @@ class AlertUI:
         # centrirano, svako sljedeće malo niže da se vide sva
         w.update_idletasks()
         off = 40 * len(self.open)
-        x = (w.winfo_screenwidth() - w.winfo_width()) // 2 + off
-        y = (w.winfo_screenheight() - w.winfo_height()) // 3 + off
+        x = (w.winfo_screenwidth() - w.winfo_reqwidth()) // 2 + off
+        y = (w.winfo_screenheight() - w.winfo_reqheight()) // 3 + off
         w.geometry(f"+{x}+{y}")
         self.open.append(w)
         w.lift()
