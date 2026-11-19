@@ -131,16 +131,16 @@ export default async function MembersPage({ searchParams }: { searchParams: Sp }
             {rows.map((m) => {
               return (
                 <li key={m.dss_person_id} className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:px-5">
-                  <div className="flex min-w-0 flex-1 items-center gap-3">
+                  <a href={`/dashboard/clanovi/${encodeURIComponent(m.dss_person_id)}`} className="group flex min-w-0 flex-1 items-center gap-3">
                     <Avatar name={m.full_name} />
                     <div className="min-w-0">
-                      <p className="truncate font-semibold text-white">{m.full_name ?? 'Bez imena'}</p>
+                      <p className="truncate font-semibold text-white group-hover:text-[#ff8a5c]">{m.full_name ?? 'Bez imena'}</p>
                       <p className="truncate text-xs text-zinc-500">
                         {m.cards ? `Kartica ${m.cards}` : 'bez kartice'}
                         {m.person_code ? ` · šifra ${m.person_code}` : ''}
                       </p>
                     </div>
-                  </div>
+                  </a>
                   <div className="grid grid-cols-2 gap-3 text-xs sm:flex sm:items-center sm:gap-6">
                     <div>
                       <p className="text-zinc-500">Važi</p>

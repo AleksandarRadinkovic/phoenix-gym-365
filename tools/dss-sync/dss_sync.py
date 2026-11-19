@@ -20,6 +20,9 @@ Pokretanje:
     python dss_sync.py --inspect     ispiše šta bi se slalo, ne šalje ništa
     python dss_sync.py --members-full  ponovo pošalje SVE osobe (bez produženja)
     python dss_sync.py --reset-from N  postavi zadnji ID ulaza na N
+    python dss_sync.py --backfill    jednokratno pošalje SVE stare ulaske (od početka DSS-a)
+                                     direktno panelu (APP_URL + IMPORT_SECRET), mimo KV reda.
+                                     Može se prekinuti i ponovo pokrenuti — nastavlja gdje je stao.
 """
 
 import os
@@ -79,8 +82,14 @@ KV_MEMBER_QUEUE_KEY = env("KV_MEMBER_QUEUE_KEY", "gym:members:queue")
 
 BATCH_SIZE = int(env("DSS_SYNC_BATCH_SIZE", "500"))
 
+# Za --backfill (uvoz starih ulazaka direktno u panel)
+APP_URL = env("APP_URL", "https://app.phoenixgym365.com").rstrip("/")
+IMPORT_SECRET = env("IMPORT_SECRET", "")
+BACKFILL_BATCH = int(env("DSS_BACKFILL_BATCH", "2000"))
+
 HERE = Path(__file__).parent
 STATE_FILE = Path(env("DSS_SYNC_STATE_FILE", str(HERE / "dss_sync_state.json")))
+BACKFILL_STATE_FILE = Path(env("DSS_BACKFILL_STATE_FILE", str(HERE / "dss_backfill_state.json")))
 MEMBER_STATE_FILE = Path(env("DSS_MEMBER_STATE_FILE", str(HERE / "dss_members_state.json")))
 LOG_FILE = Path(env("DSS_SYNC_LOG_FILE", str(HERE / "dss_sync.log")))
 
@@ -197,7 +206,7 @@ def resolve_person_key(cur):
 # 1) Ulasci
 # ---------------------------------------------------------------------------
 
-def fetch_new_records(cur, last_id):
+def fetch_new_records(cur, last_id, limit=None):
     cur.execute(
         f"""
         SELECT r.ID AS record_id,
@@ -218,9 +227,23 @@ def fetch_new_records(cur, last_id):
         ORDER BY r.ID ASC
         LIMIT %s
         """,
-        (last_id, BATCH_SIZE),
+        (last_id, limit or BATCH_SIZE),
     )
     return cur.fetchall()
+
+
+def entry_payload(r):
+    name = " ".join(x for x in [r.get("first_name"), r.get("last_name")] if x) or None
+    return {
+        "record_id": r["record_id"],
+        "card_number": r["card_number"],
+        "event_time": ts(r["event_time"]),
+        "door_name": r["door_name"],
+        "enter_or_exit": r["enter_or_exit"],
+        "person_name": name,
+        "person_code": r.get("person_code"),
+        "synced_at": datetime.now(timezone.utc).isoformat(),
+    }
 
 
 def sync_entries(cur, state, dry=False):
@@ -230,19 +253,7 @@ def sync_entries(cur, state, dry=False):
         rows = fetch_new_records(cur, last_id)
         if not rows:
             break
-        payloads = []
-        for r in rows:
-            name = " ".join(x for x in [r.get("first_name"), r.get("last_name")] if x) or None
-            payloads.append({
-                "record_id": r["record_id"],
-                "card_number": r["card_number"],
-                "event_time": ts(r["event_time"]),
-                "door_name": r["door_name"],
-                "enter_or_exit": r["enter_or_exit"],
-                "person_name": name,
-                "person_code": r.get("person_code"),
-                "synced_at": datetime.now(timezone.utc).isoformat(),
-            })
+        payloads = [entry_payload(r) for r in rows]
         if dry:
             log.info("[inspect] %d novih ulazaka, primjer: %s", len(payloads), payloads[0])
             return len(payloads)
@@ -342,6 +353,62 @@ def sync_members(cur, full=False, dry=False):
     return len(payloads)
 
 
+# ---------------------------------------------------------------------------
+# 3) Jednokratni uvoz starih ulazaka (--backfill)
+# ---------------------------------------------------------------------------
+
+def run_backfill(dry=False):
+    """Šalje sve ulaske od ID 0 do onog od kojeg redovna sinhronizacija već radi."""
+    if not IMPORT_SECRET and not dry:
+        print("GREŠKA: postavi IMPORT_SECRET (ista vrijednost kao u Vercel env)", file=sys.stderr)
+        sys.exit(1)
+    sync_state = load_json(STATE_FILE, {"last_id": 0})
+    stop_at = int(sync_state.get("last_id", 0))
+    bstate = load_json(BACKFILL_STATE_FILE, {"done_id": 0})
+    done_id = int(bstate.get("done_id", 0))
+
+    conn = connect_db()
+    try:
+        with conn.cursor() as cur:
+            resolve_person_key(cur)
+            cur.execute(f"SELECT MIN(ID) AS a, MAX(ID) AS b, COUNT(*) AS n FROM `{TABLE_RECORD}` WHERE ID <= %s", (stop_at,))
+            info = cur.fetchone()
+            log.info("Backfill: zapisa do ID %s: %s (ID %s–%s), već poslano do ID %s",
+                     stop_at, info["n"], info["a"], info["b"], done_id)
+            sent = 0
+            session = requests.Session()
+            while done_id < stop_at:
+                rows = [r for r in fetch_new_records(cur, done_id, BACKFILL_BATCH) if r["record_id"] <= stop_at]
+                if not rows:
+                    break
+                payloads = [entry_payload(r) for r in rows]
+                if dry:
+                    log.info("[inspect] backfill serija od %d, prvi: %s", len(payloads), payloads[0]["event_time"])
+                    return
+                for attempt in range(5):
+                    try:
+                        resp = session.post(
+                            f"{APP_URL}/api/import-entries",
+                            headers={"Authorization": f"Bearer {IMPORT_SECRET}", "Content-Type": "application/json"},
+                            data=json.dumps({"entries": payloads}, ensure_ascii=False, default=str),
+                            timeout=90,
+                        )
+                        resp.raise_for_status()
+                        break
+                    except Exception as e:
+                        if attempt == 4:
+                            raise
+                        log.warning("Greška pri slanju (%s), ponavljam za %ds", e, 5 * (attempt + 1))
+                        time.sleep(5 * (attempt + 1))
+                done_id = max(r["record_id"] for r in rows)
+                sent += len(rows)
+                save_json(BACKFILL_STATE_FILE, {"done_id": done_id, "updated": datetime.now(timezone.utc).isoformat()})
+                log.info("Backfill: poslano %d (do ID %s, %s)", sent, done_id, payloads[-1]["event_time"])
+            log.info("Backfill gotov: ukupno poslano %d", sent)
+    finally:
+        conn.close()
+
+
 # ----------------------------------------------------------------------------
 
 def run_once(full_members=False, dry=False):
@@ -366,7 +433,12 @@ def main():
     ap.add_argument("--loop", action="store_true")
     ap.add_argument("--interval", type=int, default=int(env("DSS_SYNC_INTERVAL_SECONDS", "60")))
     ap.add_argument("--reset-from", type=int, default=None)
+    ap.add_argument("--backfill", action="store_true", help="Jednokratno pošalji sve stare ulaske panelu")
     args = ap.parse_args()
+
+    if args.backfill:
+        run_backfill(dry=args.inspect)
+        return
 
     if args.reset_from is not None:
         state = load_json(STATE_FILE, {"last_id": 0})

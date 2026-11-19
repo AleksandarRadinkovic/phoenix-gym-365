@@ -105,6 +105,7 @@ export default async function EntriesPage({ searchParams }: { searchParams: Sp }
               <ul className="divide-y divide-white/[0.05]">
                 {items.map((x) => {
                   const expired = x.valid_until && new Date(x.valid_until).getTime() < new Date(x.first_in).getTime();
+                  const again = x.swipes > 1 && new Date(x.last_swipe).getTime() - new Date(x.first_in).getTime() > 2 * 60_000;
                   return (
                     <li key={`${x.card_number}-${x.day}`} className="flex items-center gap-3 px-4 py-3 sm:px-5">
                       <div className="w-12 shrink-0 text-center">
@@ -114,9 +115,18 @@ export default async function EntriesPage({ searchParams }: { searchParams: Sp }
                       </div>
                       <Avatar name={x.name} />
                       <div className="min-w-0 flex-1">
-                        <p className={x.name ? 'truncate font-semibold text-white' : 'truncate font-semibold text-zinc-500'}>
-                          {x.name ?? 'Nepoznata kartica'}
-                        </p>
+                        <div className="flex flex-wrap items-center gap-2">
+                          {x.dss_person_id ? (
+                            <a href={`/dashboard/clanovi/${encodeURIComponent(x.dss_person_id)}`} className="truncate font-semibold text-white hover:text-[#ff8a5c]">
+                              {x.name ?? 'Bez imena'}
+                            </a>
+                          ) : (
+                            <p className={x.name ? 'truncate font-semibold text-white' : 'truncate font-semibold text-zinc-500'}>
+                              {x.name ?? 'Nepoznata kartica'}
+                            </p>
+                          )}
+                          {again && <Badge tone="amber">ponovni ulazak</Badge>}
+                        </div>
                         <p className="truncate text-xs text-zinc-500">
                           Kartica {x.card_number}
                           {x.swipes > 1 ? ` · ${x.swipes}× provučena, zadnje ${fmtTime(x.last_swipe)}` : ''}
