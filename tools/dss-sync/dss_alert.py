@@ -24,7 +24,7 @@ Env varijable: iste DSS_DB_* kao dss_sync.py (DSS_DB_PASSWORD je obavezna), plus
     ALERT_POLL_SECONDS       (default 2)
     ALERT_DEBOUNCE_SECONDS   (default 120)
     ALERT_EXPIRED            1 = upozori i na isteklu članarinu (default 1)
-    DSS_ALERT_OK_COL         kolona rezultata (npr. OPEN_RESULT); prazno = broje se sva provlačenja
+    DSS_ALERT_OK_COL         kolona rezultata (default OPEN_TYPE_LEVEL: 1 = propušten, 2 = odbijen)
     DSS_ALERT_OK_VALUES      vrijednosti koje znače "propušten" (default "1")
 """
 
@@ -74,7 +74,7 @@ CARD_PERSON_COL = env("DSS_CARD_PERSON_COL", "PERSON_ID")
 POLL = float(env("ALERT_POLL_SECONDS", "2"))
 DEBOUNCE = float(env("ALERT_DEBOUNCE_SECONDS", "120"))
 ALERT_EXPIRED = env("ALERT_EXPIRED", "1") == "1"
-OK_COL = env("DSS_ALERT_OK_COL", "").strip()
+OK_COL = env("DSS_ALERT_OK_COL", "OPEN_TYPE_LEVEL").strip()  # 1 = propušten, 2 = odbijen
 OK_VALUES = {v.strip() for v in env("DSS_ALERT_OK_VALUES", "1").split(",") if v.strip()}
 
 HERE = Path(__file__).parent
@@ -404,8 +404,8 @@ class AlertUI:
         # centrirano, svako sljedeće malo niže da se vide sva
         w.update_idletasks()
         off = 40 * len(self.open)
-        x = (w.winfo_screenwidth() - w.winfo_width()) // 2 + off
-        y = (w.winfo_screenheight() - w.winfo_height()) // 3 + off
+        x = (w.winfo_screenwidth() - w.winfo_reqwidth()) // 2 + off
+        y = (w.winfo_screenheight() - w.winfo_reqheight()) // 3 + off
         w.geometry(f"+{x}+{y}")
         self.open.append(w)
         w.lift()
