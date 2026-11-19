@@ -15,7 +15,7 @@ import { sql } from '@vercel/postgres';
 export const ENTRY_QUEUE = process.env.KV_QUEUE_KEY ?? 'gym:access:queue';
 export const MEMBER_QUEUE = process.env.KV_MEMBER_QUEUE_KEY ?? 'gym:members:queue';
 
-type AccessEntry = {
+export type AccessEntry = {
   record_id: number;
   card_number: string | null;
   event_time: string | null;
@@ -64,7 +64,7 @@ function cleanTs(v: string | null | undefined): string | null {
 }
 
 /** Upis više ulazaka jednim upitom. */
-async function saveEntries(list: AccessEntry[]) {
+export async function saveEntries(list: AccessEntry[]) {
   if (list.length === 0) return;
   const json = JSON.stringify(
     list.map((e) => ({

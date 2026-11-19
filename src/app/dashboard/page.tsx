@@ -3,6 +3,7 @@ import { sql } from '@vercel/postgres';
 import { Activity, AlertTriangle, CreditCard, Flame, ShieldCheck, Users } from 'lucide-react';
 import { RangeBar, Shell } from '@/components/dashboard/Shell';
 import { Avatar, Badge, Bars, Card, Empty, Kpi, Notice, SectionTitle, ValidityBadge, pct } from '@/components/dashboard/ui';
+import { fmtKM, summarize } from '@/lib/gym/packages';
 import { drainQuietly } from '@/lib/gym/sync';
 import {
   agoLabel,
@@ -30,7 +31,7 @@ export default async function OverviewPage({ searchParams }: { searchParams: Sp 
   const prev = previousRange(r);
   const isToday = r.from === r.to && r.to === todayLocal();
 
-  const [cur, before, daily, hourly, renewals, members, expiring, latestRenewals] = await Promise.all([
+  const [cur, before, daily, hourly, renewals, members, expiring, latestRenewals, paidRows] = await Promise.all([
     sql`
       SELECT count(*)::int AS visits, count(DISTINCT card_number)::int AS people
       FROM (
@@ -104,7 +105,13 @@ export default async function OverviewPage({ searchParams }: { searchParams: Sp 
         AND renewed_at < (${r.to}::date + 1)::timestamp AT TIME ZONE 'Europe/Sarajevo'
       ORDER BY renewed_at DESC
       LIMIT 6`,
+    sql`
+      SELECT previous_until, new_until, renewed_at
+      FROM gym_renewals
+      WHERE renewed_at >= ${r.from}::date::timestamp AT TIME ZONE 'Europe/Sarajevo'
+        AND renewed_at < (${r.to}::date + 1)::timestamp AT TIME ZONE 'Europe/Sarajevo'`,
   ]);
+  const income = summarize(paidRows.rows as { previous_until: string | null; new_until: string | null; renewed_at: string }[]);
 
   const c = cur.rows[0] as { visits: number; people: number };
   const b = before.rows[0] as { visits: number; people: number };
@@ -174,7 +181,7 @@ export default async function OverviewPage({ searchParams }: { searchParams: Sp 
         <Kpi
           label="Produženja"
           value={membersReady ? renCount : '—'}
-          hint={membersReady ? `Produžene članarine u periodu${newCount ? ` · +${newCount} ${newCount === 1 ? 'nova' : 'novih'}` : ''}` : 'Čeka podatke sa DSS-a'}
+          hint={membersReady ? `≈ ${fmtKM(income.total)} · produžene članarine u periodu${newCount ? ` · +${newCount} ${newCount === 1 ? 'nova' : 'novih'}` : ''}` : 'Čeka podatke sa DSS-a'}
           icon={<CreditCard className="h-4 w-4" />}
           href={`/dashboard/clanarine?${q}`}
         />
