@@ -7,6 +7,8 @@ import { Avatar, Badge, Card, Empty, Kpi, SectionTitle, ValidityBadge, cx } from
 import { classifyRenewal, fmtKM } from '@/lib/gym/packages';
 import { drainQuietly } from '@/lib/gym/sync';
 import { fmtDate, fmtDateTime, fmtTime, localDay } from '@/lib/gym/time';
+import { buildVisits, type Visit } from '@/lib/gym/visits';
+import { VisitDetails } from '@/components/dashboard/VisitDetails';
 
 export const dynamic = 'force-dynamic';
 // Bez Next.js keša za SQL upite (inače panel prikazuje stare brojke).
@@ -57,7 +59,7 @@ export default async function MemberPage({ params }: { params: { id: string } })
   const cards = member.cards ?? [];
   const cardsJson = JSON.stringify(cards);
 
-  const [renRes, daysRes] = await Promise.all([
+  const [renRes, daysRes, swipeRes] = await Promise.all([
     sql`
       SELECT id, kind, previous_until, new_until, renewed_at
       FROM gym_renewals WHERE dss_person_id = ${id}
@@ -69,7 +71,21 @@ export default async function MemberPage({ params }: { params: { id: string } })
       FROM gym_entries e
       WHERE e.card_number IN (SELECT json_array_elements_text(${cardsJson}::json))
       GROUP BY 1 ORDER BY 1 DESC`,
+    // Sva provlačenja zadnjih 120 dana (za ulaske i sumnjive)
+    sql`
+      SELECT e.event_time FROM gym_entries e
+      WHERE e.card_number IN (SELECT json_array_elements_text(${cardsJson}::json))
+        AND e.event_time >= now() - interval '120 days'
+      ORDER BY e.event_time`,
   ]);
+  const visits = buildVisits(
+    swipeRes.rows.map((x) => x.event_time as string),
+    member.valid_until,
+  );
+  const visitDays = new Map<string, Visit[]>();
+  for (const v of visits) visitDays.set(v.gymDay, [...(visitDays.get(v.gymDay) ?? []), v]);
+  const recentDays = Array.from(visitDays.entries()).reverse().slice(0, 40);
+  const suspiciousTotal = visits.filter((v) => v.suspicious).length;
 
   const renewals = renRes.rows as Renewal[];
   const days = daysRes.rows as Day[];
@@ -222,21 +238,33 @@ export default async function MemberPage({ params }: { params: { id: string } })
 
         <Card>
           <div className="p-4 pb-0 sm:p-5 sm:pb-0">
-            <SectionTitle title="Zadnji dolasci" hint={`Ukupno ${days.length} dana sa dolaskom`} />
+            <SectionTitle
+              title="Zadnji dolasci"
+              hint={`Ukupno ${days.length} dana sa dolaskom${suspiciousTotal ? ` · ${suspiciousTotal} sumnjivih ulazaka (120 dana)` : ''}`}
+            />
           </div>
-          {days.length === 0 ? (
-            <Empty>Nema dolazaka.</Empty>
+          {recentDays.length === 0 ? (
+            <Empty>Nema dolazaka u zadnjih 120 dana.</Empty>
           ) : (
             <ul className="divide-y divide-white/[0.05]">
-              {days.slice(0, 40).map((d) => (
-                <li key={d.day} className="flex items-center justify-between gap-3 px-4 py-2.5 text-sm sm:px-5">
-                  <span className="text-zinc-200">{fmtDate(`${d.day}T12:00:00Z`)}</span>
-                  <span className="text-zinc-400">
-                    {fmtTime(d.first_in)}
-                    {d.swipes > 1 ? <span className="ml-2 text-xs text-amber-300">{d.swipes}× provučena</span> : null}
-                  </span>
-                </li>
-              ))}
+              {recentDays.map(([day, vs]) => {
+                const sus = vs.some((v) => v.suspicious);
+                const swipes = vs.reduce((n, v) => n + v.swipes.length, 0);
+                const summary =
+                  vs.length > 1 ? `${vs.length} ulaska: ${vs.map((v) => fmtTime(v.start)).join(', ')}` : sus ? 'detalji ulaska' : swipes > 1 ? 'detalji provlačenja' : '';
+                return (
+                  <li key={day} className={`px-4 py-2.5 text-sm sm:px-5 ${sus ? 'bg-rose-500/[0.06]' : ''}`}>
+                    <div className="flex items-center justify-between gap-3">
+                      <span className="text-zinc-200">{fmtDate(`${day}T12:00:00Z`)}</span>
+                      <span className="flex items-center gap-2 text-zinc-400">
+                        {sus && <Badge tone="red">⚠ sumnjivo</Badge>}
+                        {fmtTime(vs[0].start)}
+                      </span>
+                    </div>
+                    {summary && <VisitDetails visits={vs} summary={summary} />}
+                  </li>
+                );
+              })}
             </ul>
           )}
         </Card>
