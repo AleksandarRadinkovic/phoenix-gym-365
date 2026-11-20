@@ -435,6 +435,7 @@ class AlertUI:
         self.root.after(300, self.pump)
 
     def beep(self, repeats=3):
+        wake_display()
         if not winsound:
             self.root.bell()
             return
@@ -546,6 +547,17 @@ class AlertUI:
 
 
 # ---------------------------------------------------------------------------
+
+def wake_display():
+    """Ekran na recepciji se gasi nakon 15 min — upali ga kad iskoči upozorenje (računar ne spava, samo monitor)."""
+    try:
+        import ctypes
+        ctypes.windll.kernel32.SetThreadExecutionState(0x00000002)  # ES_DISPLAY_REQUIRED: resetuje tajmer ekrana
+        ctypes.windll.user32.mouse_event(0x0001, 1, 0, 0, 0)  # mali pomak miša budi monitor
+        ctypes.windll.user32.mouse_event(0x0001, -1, 0, 0, 0)
+    except Exception:
+        pass
+
 
 def single_instance():
     """Samo jedna kopija skripte u isto vrijeme (Task Scheduler + ručno pokretanje)."""
