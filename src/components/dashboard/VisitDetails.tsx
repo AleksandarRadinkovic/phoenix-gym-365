@@ -36,11 +36,17 @@ export function VisitDetails({ visits, summary }: { visits: Visit[]; summary: st
                 <AlertTriangle className="h-3 w-3" /> {v.reason}
               </span>
             )}
-            {v.swipes.length > 1 && (
-              <span className="block text-zinc-500">
-                ponovljen sken (isti ulazak): {v.swipes.slice(1).map(hms).join(', ')}
+            {v.exit && (
+              <span className="block text-zinc-400">
+                izlaz u <span className="tabular-nums">{hms(v.exit)}</span> · nakon {fmtGap((v.exit.getTime() - v.start.getTime()) / 60_000)}
               </span>
             )}
+            {(() => {
+              const dups = v.swipes.slice(1).filter((x) => !v.exit || x.getTime() !== v.exit.getTime());
+              return dups.length ? (
+                <span className="block text-zinc-500">ponovljen sken: {dups.map(hms).join(', ')}</span>
+              ) : null;
+            })()}
           </li>
         ))}
       </ol>

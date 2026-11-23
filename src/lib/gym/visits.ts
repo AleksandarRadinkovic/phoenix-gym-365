@@ -5,6 +5,9 @@
 //
 //   - Sva provlačenja u roku od DUP_SECONDS od početka ulaska su isti ulazak
 //     (vrata nisu pročitala karticu iz prve, pa je provučena ponovo).
+//   - Prvo sljedeće provlačenje u roku od EXIT_HOURS od ulaska je IZLAZ (navečer ljudi
+//     provuku karticu i kad izlaze) — nije novi ulazak i nije sumnjivo. Tek provlačenje
+//     poslije izlaza (ili poslije EXIT_HOURS) je novi ulazak.
 //   - Ulazak je SUMNJIV ako je prethodni ulazak iste osobe:
 //       a) u istom "danu teretane" (dan traje od 05:00 do 05:00), ili
 //       b) prije manje od MIN_GAP_HOURS sati (npr. 23:00 pa 07:00).
@@ -13,12 +16,15 @@
 import { TZ, fmtTime } from './time';
 
 export const DUP_SECONDS = 120;
+export const EXIT_HOURS = 2;
 export const MIN_GAP_HOURS = 10;
 export const DAY_START_HOUR = 5;
 
 export type Visit = {
   start: Date;
   swipes: Date[];
+  /** provlačenje pri izlasku (ako postoji) */
+  exit: Date | null;
   /** redni broj ulaska u danu teretane (1, 2, 3…) */
   n: number;
   gymDay: string;
@@ -57,9 +63,19 @@ export function buildVisits(times: (Date | string)[], validUntil?: Date | string
   const visits: Visit[] = [];
   for (const t of sorted) {
     const last = visits[visits.length - 1];
-    if (last && (t.getTime() - last.start.getTime()) / 1000 < DUP_SECONDS) {
-      last.swipes.push(t);
-      continue;
+    if (last) {
+      const sinceStart = (t.getTime() - last.start.getTime()) / 1000;
+      // ponovljen sken pri ulasku ili pri izlasku
+      if (sinceStart < DUP_SECONDS || (last.exit && (t.getTime() - last.exit.getTime()) / 1000 < DUP_SECONDS)) {
+        last.swipes.push(t);
+        continue;
+      }
+      // prvo sljedeće provlačenje u roku od EXIT_HOURS = izlaz
+      if (!last.exit && sinceStart < EXIT_HOURS * 3600) {
+        last.exit = t;
+        last.swipes.push(t);
+        continue;
+      }
     }
     const day = gymDay(t);
     const prev = last ? last.start : null;
@@ -76,7 +92,7 @@ export function buildVisits(times: (Date | string)[], validUntil?: Date | string
         ? `${n}. ulazak istog dana · ${fmtGap(gapMin)} nakon ulaska u ${fmtTime(prev)}`
         : `samo ${fmtGap(gapMin)} nakon ulaska u ${fmtTime(prev)} prethodnog dana`;
     }
-    visits.push({ start: t, swipes: [t], n, gymDay: day, suspicious, prev, gapMin, reason });
+    visits.push({ start: t, swipes: [t], exit: null, n, gymDay: day, suspicious, prev, gapMin, reason });
   }
   return visits;
 }

@@ -251,7 +251,7 @@ export default async function MemberPage({ params }: { params: { id: string } })
                 const sus = vs.some((v) => v.suspicious);
                 const swipes = vs.reduce((n, v) => n + v.swipes.length, 0);
                 const summary =
-                  vs.length > 1 ? `${vs.length} ulaska: ${vs.map((v) => fmtTime(v.start)).join(', ')}` : sus ? 'detalji ulaska' : swipes > 1 ? 'detalji provlačenja' : '';
+                  vs.length > 1 ? `${vs.length} ulaska: ${vs.map((v) => fmtTime(v.start)).join(', ')}` : sus ? 'detalji ulaska' : vs[0].exit ? `izlaz u ${fmtTime(vs[0].exit)}` : swipes > 1 ? 'detalji provlačenja' : '';
                 return (
                   <li key={day} className={`px-4 py-2.5 text-sm sm:px-5 ${sus ? 'bg-rose-500/[0.06]' : ''}`}>
                     <div className="flex items-center justify-between gap-3">

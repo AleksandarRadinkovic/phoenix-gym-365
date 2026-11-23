@@ -163,8 +163,10 @@ export default async function EntriesPage({ searchParams }: { searchParams: Sp }
                       ? `${x.visits.length} ulaska: ${x.visits.map((v) => fmtTime(v.start)).join(', ')}`
                       : x.suspicious
                         ? 'detalji ulaska'
-                        : x.visits[0].swipes.length > 1
-                          ? 'detalji provlačenja'
+                        : x.visits[0].exit
+                          ? `izlaz u ${fmtTime(x.visits[0].exit)}`
+                          : x.visits[0].swipes.length > 1
+                            ? 'detalji provlačenja'
                           : '';
                   return (
                     <li key={x.key} className={`flex items-start gap-3 px-4 py-3 sm:px-5 ${x.suspicious ? 'bg-rose-500/[0.06]' : ''}`}>
@@ -210,7 +212,7 @@ export default async function EntriesPage({ searchParams }: { searchParams: Sp }
       {total > 600 && <p className="mt-3 text-xs text-zinc-500">Prikazano zadnjih 600 od {total} dolazaka — suzi period ili pretragu.</p>}
       <p className="mt-6 text-xs leading-relaxed text-zinc-500">
         Dan teretane traje od 05:00 do 05:00 (ulazak u 00:30 pripada prethodnom danu). Provlačenja u roku od 2 minute su isti
-        ulazak. Sumnjivo je ako ista osoba uđe više puta istog dana teretane ili manje od 10 sati nakon prethodnog ulaska
+        ulazak, a prvo sljedeće provlačenje u roku od 2 sata je izlaz (ne novi ulazak). Sumnjivo je ako ista osoba uđe više puta istog dana teretane ili manje od 10 sati nakon prethodnog ulaska
         (npr. 23:00 pa 07:00). Provlačenje istekle kartice ne broji se kao sumnjivo.
       </p>
     </Shell>
