@@ -8,6 +8,8 @@ nove zapise u ac_door_access_record i primjenjuje ista pravila kao panel
 
   - Sva provlačenja u roku od ALERT_DEBOUNCE_SECONDS (120 s) od početka ulaska su isti
     ulazak (vrata nisu pročitala karticu iz prve).
+  - Prvo sljedeće provlačenje u roku od ALERT_EXIT_HOURS (2 h) od ulaska je IZLAZ
+    (navečer ljudi provuku karticu i kad izlaze) — ne iskače ništa.
   - Ulazak je SUMNJIV ako je prethodni ulazak iste osobe (bilo kojom njenom karticom):
       a) u istom "danu teretane" (dan traje od 05:00 do 05:00), ili
       b) prije manje od ALERT_MIN_GAP_HOURS (10) sati, npr. 23:00 pa 07:00.
@@ -79,6 +81,7 @@ POLL = float(env("ALERT_POLL_SECONDS", "2"))
 DEBOUNCE = float(env("ALERT_DEBOUNCE_SECONDS", "120"))
 ALERT_EXPIRED = env("ALERT_EXPIRED", "1") == "1"
 MIN_GAP_HOURS = float(env("ALERT_MIN_GAP_HOURS", "10"))
+EXIT_HOURS = float(env("ALERT_EXIT_HOURS", "2"))
 DAY_START_HOUR = int(env("ALERT_DAY_START_HOUR", "5"))
 QUIET_FROM = int(env("ALERT_QUIET_FROM", "22"))
 QUIET_TO = int(env("ALERT_QUIET_TO", "7"))
@@ -204,7 +207,7 @@ class Watcher:
         self.person_key = None
         self.card_to_person = {}  # broj kartice -> id osobe
         self.person_info = {}  # id osobe -> {"name", "expire"}
-        self.visits = {}  # ključ osobe -> lista početaka ulazaka (zadnjih ~2 dana)
+        self.visits = {}  # ključ osobe -> lista ulazaka {"start", "exit"} (zadnjih ~2 dana)
         self.ok_col = OK_COL or None
         self.last_people_refresh = 0.0
         state = load_json(STATE_FILE, {})
@@ -325,14 +328,25 @@ class Watcher:
 
     def process(self, r, t, alert=True):
         key, pid = self.person_key_for(r["card"])
-        starts = self.visits.setdefault(key, [])
-        if starts and 0 <= (t - starts[-1]).total_seconds() < DEBOUNCE:
-            return  # ponovljen sken istog ulaska
-        prev = starts[-1] if starts else None
-        starts.append(t)
+        visits = self.visits.setdefault(key, [])
+        last = visits[-1] if visits else None
+        if last:
+            since_start = (t - last["start"]).total_seconds()
+            # ponovljen sken pri ulasku ili pri izlasku
+            if 0 <= since_start < DEBOUNCE or (last["exit"] and 0 <= (t - last["exit"]).total_seconds() < DEBOUNCE):
+                return
+            # prvo sljedeće provlačenje u roku od EXIT_HOURS = izlaz, ne novi ulazak
+            if not last["exit"] and 0 <= since_start < EXIT_HOURS * 3600:
+                last["exit"] = t
+                if alert:
+                    log.info("Izlaz: %s u %s", r["card"], t.strftime("%H:%M"))
+                return
+        prev = last["start"] if last else None
+        visits.append({"start": t, "exit": None})
         cutoff = t - timedelta(hours=48)
-        while starts and starts[0] < cutoff:
-            starts.pop(0)
+        while visits and visits[0]["start"] < cutoff:
+            visits.pop(0)
+        starts = [v["start"] for v in visits]
         if not alert:
             return
 
